@@ -8,6 +8,12 @@ echo "Extracting InvoicePlane ${INVOICE_PLANE_VERSION}..."
 tar -xf /tmp/invoice-plane-${INVOICE_PLANE_VERSION}.tar.gz --strip=1 -C ${INVOICE_PLANE_INSTALL_DIR}
 rm -rf /tmp/invoice-plane-${INVOICE_PLANE_VERSION}.tar.gz
 
+cat > ${INVOICE_PLANE_INSTALL_DIR}/.user.ini <<EOF
+default_charset = 'UTF-8'
+output_buffering = off
+date.timezone = {{INVOICE_PLANE_TIMEZONE}}
+EOF
+
 echo "Setting strong directory permissions..."
 find ${INVOICE_PLANE_INSTALL_DIR}/ -type f -print0 | xargs -0 chmod 0640
 find ${INVOICE_PLANE_INSTALL_DIR}/ -type d -print0 | xargs -0 chmod 0750

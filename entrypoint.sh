@@ -2,6 +2,7 @@
 set -e
 
 INVOICE_PLANE_FQDN=${INVOICE_PLANE_FQDN:-localhost}
+INVOICE_PLANE_TIMEZONE=${INVOICE_PLANE_TIMEZONE:-UTC}
 
 DB_HOST=${DB_HOST:-}
 DB_USER=${DB_USER:-}
@@ -73,6 +74,9 @@ sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICE
 sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
 sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
 sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+
+# configure timezone
+sudo -HEu ${INVOICE_PLANE_USER} sed -i 's,{{INVOICE_PLANE_TIMEZONE}},'"${INVOICE_PLANE_TIMEZONE}"','  ${INVOICE_PLANE_INSTALL_DIR}/.user.ini
 
 # create VERSION file, not used at the moment but might be required in the future
 CURRENT_VERSION=
