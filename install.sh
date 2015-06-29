@@ -3,10 +3,10 @@ set -e
 
 mkdir -p ${INVOICE_PLANE_INSTALL_DIR}
 echo "Downloading InvoicePlane ${INVOICE_PLANE_VERSION}..."
-wget "https://github.com/InvoicePlane/InvoicePlane/archive/v${INVOICE_PLANE_VERSION}.tar.gz" -O /tmp/invoice-plane-${INVOICE_PLANE_VERSION}.tar.gz
+wget "https://github.com/InvoicePlane/InvoicePlane/archive/v${INVOICE_PLANE_VERSION}.tar.gz" -O /tmp/invoiceplane-${INVOICE_PLANE_VERSION}.tar.gz
 echo "Extracting InvoicePlane ${INVOICE_PLANE_VERSION}..."
-tar -xf /tmp/invoice-plane-${INVOICE_PLANE_VERSION}.tar.gz --strip=1 -C ${INVOICE_PLANE_INSTALL_DIR}
-rm -rf /tmp/invoice-plane-${INVOICE_PLANE_VERSION}.tar.gz
+tar -xf /tmp/invoiceplane-${INVOICE_PLANE_VERSION}.tar.gz --strip=1 -C ${INVOICE_PLANE_INSTALL_DIR}
+rm -rf /tmp/invoiceplane-${INVOICE_PLANE_VERSION}.tar.gz
 
 cat > ${INVOICE_PLANE_INSTALL_DIR}/.user.ini <<EOF
 default_charset = 'UTF-8'

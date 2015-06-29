@@ -1,7 +1,7 @@
 nginxSites:
   image: busybox
   volumes:
-    - /srv/docker/invoice-plane/nginx/sites-enabled:/etc/nginx/sites-enabled
+    - /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled
   command: tail -f /dev/null
 
 mysql:
@@ -11,17 +11,17 @@ mysql:
     - DB_PASS=password
     - DB_NAME=invoice_plane_db
   volumes:
-    - /srv/docker/invoice-plane/mysql:/var/lib/mysql
+    - /srv/docker/invoiceplane/mysql:/var/lib/mysql
 
 invoicePlane:
-  image: sameersbn/invoice-plane:latest
+  image: sameersbn/invoiceplane:latest
   environment:
     - INVOICE_PLANE_FQDN=invoice.example.com
     - INVOICE_PLANE_TIMEZONE=Asia/Kolkata
   links:
     - mysql:mysql
   volumes:
-    - /srv/docker/invoice-plane/invoice-plane:/var/lib/invoice-plane
+    - /srv/docker/invoiceplane/invoiceplane:/var/lib/invoiceplane
   volumes_from:
     - nginxSites
 

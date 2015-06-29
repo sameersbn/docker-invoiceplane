@@ -39,7 +39,7 @@ DB_PORT=${DB_PORT:-3306}
 
 # install nginx configuration, if not exists
 if [ -d /etc/nginx/sites-enabled -a ! -f /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf ]; then
-  cp /var/cache/invoice-plane/conf/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
+  cp /var/cache/invoiceplane/conf/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
   sed -i 's,{{INVOICE_PLANE_FQDN}},'"${INVOICE_PLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
   sed -i 's,{{INVOICE_PLANE_INSTALL_DIR}},'"${INVOICE_PLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
 fi
@@ -72,7 +72,7 @@ ln -sf ${INVOICE_PLANE_DATA_DIR}/uploads ${INVOICE_PLANE_INSTALL_DIR}/uploads
 chown -R ${INVOICE_PLANE_USER}:${INVOICE_PLANE_USER} ${INVOICE_PLANE_DATA_DIR}/
 
 # apply database configuration
-cp /var/cache/invoice-plane/conf/invoice-plane/database.php ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+cp /var/cache/invoiceplane/conf/invoiceplane/database.php ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
 sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
 sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
 sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php

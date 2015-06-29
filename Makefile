@@ -1,4 +1,4 @@
 all: build
 
 build:
-	@docker build --tag=${USER}/invoice-plane .
+	@docker build --tag=${USER}/invoiceplane .
