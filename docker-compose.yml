@@ -28,7 +28,7 @@ invoicePlane:
 nginx:
   image: sameersbn/nginx
   links:
-    - invoicePlane:php-fpm
+    - invoicePlane:invoiceplane-php-fpm
   volumes_from:
     - nginxSites
     - invoicePlane
