@@ -5,6 +5,7 @@ INVOICE_PLANE_FQDN=${INVOICE_PLANE_FQDN:-localhost}
 INVOICE_PLANE_TIMEZONE=${INVOICE_PLANE_TIMEZONE:-UTC}
 
 DB_HOST=${DB_HOST:-}
+DB_PORT=${DB_PORT:-}
 DB_USER=${DB_USER:-}
 DB_PASS=${DB_PASS:-}
 DB_NAME=${DB_NAME:-}
@@ -33,6 +34,8 @@ if [ -z "${DB_HOST}" ]; then
   echo "  Cannot continue without a database. Aborting..."
   exit 1
 fi
+
+DB_PORT=${DB_PORT:-3306}
 
 # install nginx configuration, if not exists
 if [ -d /etc/nginx/sites-enabled -a ! -f /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf ]; then
@@ -71,6 +74,7 @@ chown -R ${INVOICE_PLANE_USER}:${INVOICE_PLANE_USER} ${INVOICE_PLANE_DATA_DIR}/
 # apply database configuration
 cp /var/cache/invoice-plane/conf/invoice-plane/database.php ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
 sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
 sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
 sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
 sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
