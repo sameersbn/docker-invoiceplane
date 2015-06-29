@@ -12,7 +12,4 @@ echo "Setting strong directory permissions..."
 find ${INVOICE_PLANE_INSTALL_DIR}/ -type f -print0 | xargs -0 chmod 0640
 find ${INVOICE_PLANE_INSTALL_DIR}/ -type d -print0 | xargs -0 chmod 0750
 
-chown -R root:${INVOICE_PLANE_USER} ${INVOICE_PLANE_INSTALL_DIR}/
-chown -R ${INVOICE_PLANE_USER}:${INVOICE_PLANE_USER} ${INVOICE_PLANE_INSTALL_DIR}/application/config/
-chown -R ${INVOICE_PLANE_USER}:${INVOICE_PLANE_USER} ${INVOICE_PLANE_INSTALL_DIR}/application/helpers/mpdf/tmp
-chown -R ${INVOICE_PLANE_USER}:${INVOICE_PLANE_USER} ${INVOICE_PLANE_INSTALL_DIR}/application/logs
+chown -R ${INVOICE_PLANE_USER}:${INVOICE_PLANE_USER} ${INVOICE_PLANE_INSTALL_DIR}/
