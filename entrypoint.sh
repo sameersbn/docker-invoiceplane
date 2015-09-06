@@ -92,7 +92,7 @@ configure_timezone() {
   sudo -HEu ${INVOICE_PLANE_USER} sed -i 's,{{INVOICE_PLANE_TIMEZONE}},'"${INVOICE_PLANE_TIMEZONE}"','  ${INVOICE_PLANE_INSTALL_DIR}/.user.ini
 }
 
-create_version_file() {
+update_volume_version() {
   CURRENT_VERSION=
   [[ -f ${INVOICE_PLANE_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${INVOICE_PLANE_DATA_DIR}/VERSION)
   if [[ ${INVOICE_PLANE_VERSION} != ${CURRENT_VERSION} ]]; then
@@ -114,7 +114,7 @@ create_vhost_configuration
 autodetect_database_connection_parameters
 apply_database_settings
 configure_timezone
-create_version_file
+update_volume_version
 
 # default behaviour is to launch php5-fpm
 if [[ -z ${1} ]]; then
