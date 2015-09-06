@@ -1,15 +1,9 @@
-nginxSites:
-  image: busybox
-  volumes:
-    - /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled
-  command: tail -f /dev/null
-
 mysql:
   image: sameersbn/mysql:latest
   environment:
-    - DB_USER=invoice_plane
+    - DB_USER=invoiceplane
     - DB_PASS=password
-    - DB_NAME=invoice_plane_db
+    - DB_NAME=invoiceplane_db
   volumes:
     - /srv/docker/invoiceplane/mysql:/var/lib/mysql
 
@@ -22,15 +16,13 @@ invoicePlane:
     - mysql:mysql
   volumes:
     - /srv/docker/invoiceplane/invoiceplane:/var/lib/invoiceplane
-  volumes_from:
-    - nginxSites
+    - /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled
 
 nginx:
   image: sameersbn/nginx
   links:
     - invoicePlane:invoiceplane-php-fpm
   volumes_from:
-    - nginxSites
     - invoicePlane
   ports:
     - "80:80"
