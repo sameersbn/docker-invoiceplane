@@ -104,5 +104,9 @@ apply_database_settings
 configure_timezone
 create_version_file
 
-echo "Starting $@..."
-exec $@
+# default behaviour is to launch php5-fpm
+if [[ -z ${1} ]]; then
+  exec start-stop-daemon --start --chuid root:root --exec $(which php5-fpm)
+else
+  exec "$@"
+fi
