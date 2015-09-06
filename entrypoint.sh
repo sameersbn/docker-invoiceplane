@@ -57,7 +57,18 @@ autodetect_database_connection_parameters() {
     echo "  Cannot continue without a database. Aborting..."
     exit 1
   fi
+}
 
+apply_database_settings() {
+  cp /var/cache/invoiceplane/conf/invoiceplane/database.php ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+}
+
+test_database_connection_settings() {
   # due to the nature of docker and its use cases, we allow some time
   # for the database server to come online before continuing
   timeout=60
@@ -76,14 +87,6 @@ autodetect_database_connection_parameters() {
   echo
 }
 
-apply_database_settings() {
-  cp /var/cache/invoiceplane/conf/invoiceplane/database.php ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-}
 
 configure_timezone() {
   sudo -HEu ${INVOICE_PLANE_USER} sed -i 's,{{INVOICE_PLANE_TIMEZONE}},'"${INVOICE_PLANE_TIMEZONE}"','  ${INVOICE_PLANE_INSTALL_DIR}/.user.ini
@@ -115,6 +118,7 @@ create_version_file
 
 # default behaviour is to launch php5-fpm
 if [[ -z ${1} ]]; then
+  test_database_connection_settings
   exec start-stop-daemon --start --chuid root:root --exec $(which php5-fpm) -- ${EXTRA_ARGS}
 else
   exec "$@"
