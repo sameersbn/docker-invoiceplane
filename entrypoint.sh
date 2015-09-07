@@ -15,11 +15,11 @@ create_data_dir() {
   chmod -R 0755 ${INVOICE_PLANE_DATA_DIR}
 
   if [[ ! -d ${INVOICE_PLANE_DATA_DIR}/uploads ]]; then
-    cp -a ${INVOICE_PLANE_INSTALL_DIR}/uploads ${INVOICE_PLANE_DATA_DIR}/uploads
+    cp -a ${INVOICE_PLANE_INSTALL_DIR}/uploads ${INVOICE_PLANE_DATA_DIR}/
   fi
 
   rm -rf ${INVOICE_PLANE_INSTALL_DIR}/uploads
-  ln -sf ${INVOICE_PLANE_DATA_DIR}/uploads ${INVOICE_PLANE_INSTALL_DIR}/uploads
+  ln -sf ${INVOICE_PLANE_DATA_DIR}/uploads ${INVOICE_PLANE_INSTALL_DIR}/
   chown -R ${INVOICE_PLANE_USER}:${INVOICE_PLANE_USER} ${INVOICE_PLANE_DATA_DIR}
 }
 
