@@ -107,7 +107,7 @@ Point your browser to http://localhost:10080/setup to complete the setup and sta
 
 ## Persistence
 
-For Invoice plane to preserve its state across container shutdown and startup you should mount a volume at `/var/lib/invoiceplane`.
+For InvoicePlane to preserve its state across container shutdown and startup you should mount a volume at `/var/lib/invoiceplane`.
 
 > *The [Quickstart](#quickstart) command already mounts a volume for persistence.*
 
