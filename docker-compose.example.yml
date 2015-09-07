@@ -19,7 +19,7 @@ invoicePlane:
     - /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled
 
 nginx:
-  image: sameersbn/nginx
+  image: sameersbn/nginx:1.8.0-5
   links:
     - invoicePlane:invoiceplane-php-fpm
   volumes_from:
