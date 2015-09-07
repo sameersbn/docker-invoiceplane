@@ -103,7 +103,7 @@ docker run --name invoiceplane-nginx -d --restart=always \
   sameersbn/nginx:1.8.0-5
 ```
 
-Point your browser to http://localhost:10080/setup to complete the setup and start using InvoicePlane.
+Point your browser to [http://localhost:10080/setup](http://localhost:10080/setup) to complete the setup and start using InvoicePlane.
 
 ## Persistence
 
