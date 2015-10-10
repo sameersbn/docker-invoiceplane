@@ -7,7 +7,7 @@ ENV INVOICE_PLANE_VERSION=1.4.3 \
     INVOICE_PLANE_DATA_DIR=/var/lib/invoiceplane
 
 RUN apt-get update \
- && apt-get install -y php5-mysql php5-mcrypt mysql-client \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y php5-mysql php5-mcrypt mysql-client \
  && php5enmod mcrypt \
  && rm -rf /var/lib/apt/lists/*
 
