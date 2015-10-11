@@ -1,4 +1,4 @@
-FROM sameersbn/php5-fpm:latest
+FROM quay.io/sameersbn/php5-fpm:latest
 MAINTAINER sameer@damagehead.com
 
 ENV INVOICE_PLANE_VERSION=1.4.3 \
