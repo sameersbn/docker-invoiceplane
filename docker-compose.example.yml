@@ -1,5 +1,5 @@
 mysql:
-  image: sameersbn/mysql:latest
+  image: quay.io/sameersbn/mysql:latest
   environment:
     - DB_USER=invoiceplane
     - DB_PASS=password
@@ -8,7 +8,7 @@ mysql:
     - /srv/docker/invoiceplane/mysql:/var/lib/mysql
 
 invoicePlane:
-  image: sameersbn/invoiceplane:1.4.3-1
+  image: quay.io/sameersbn/invoiceplane:1.4.3-1
   environment:
     - INVOICE_PLANE_FQDN=invoice.example.com
     - INVOICE_PLANE_TIMEZONE=Asia/Kolkata
@@ -19,7 +19,7 @@ invoicePlane:
     - /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled
 
 nginx:
-  image: sameersbn/nginx:1.8.0-5
+  image: quay.io/sameersbn/nginx:1.8.0-5
   links:
     - invoicePlane:invoiceplane-php-fpm
   volumes_from:
