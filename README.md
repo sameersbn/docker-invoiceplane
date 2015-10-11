@@ -1,4 +1,4 @@
-# sameersbn/invoiceplane:1.4.3
+# sameersbn/invoiceplane:1.4.3-1
 
 - [Introduction](#introduction)
   - [Contributing](#contributing)
@@ -44,7 +44,7 @@ If the above recommendations do not help then [report your issue](../../issues/n
 This image is available as a [trusted build](//hub.docker.com/r/sameersbn/invoiceplane) on the [Docker hub](//hub.docker.com) and is the recommended method of installation.
 
 ```bash
-docker pull sameersbn/invoiceplane:1.4.3
+docker pull sameersbn/invoiceplane:1.4.3-1
 ```
 
 Alternatively you can build the image yourself.
@@ -89,7 +89,7 @@ docker run --name invoiceplane -d --restart=always \
   --env 'INVOICE_PLANE_TIMEZONE=Asia/Kolkata' \
   --volume /srv/docker/invoiceplane/invoiceplane:/var/lib/invoiceplane \
   --volume /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled \
-  sameersbn/invoiceplane:1.4.3
+  sameersbn/invoiceplane:1.4.3-1
 ```
 
 Step 3. Launch a NGINX container
@@ -127,7 +127,7 @@ To upgrade to newer releases:
   1. Download the updated Docker image:
 
   ```bash
-  docker pull sameersbn/invoiceplane:1.4.3
+  docker pull sameersbn/invoiceplane:1.4.3-1
   ```
 
   2. Stop the currently running image:
@@ -147,7 +147,7 @@ To upgrade to newer releases:
   ```bash
   docker run -name invoiceplane -d \
     [OPTIONS] \
-    sameersbn/invoiceplane:1.4.3
+    sameersbn/invoiceplane:1.4.3-1
   ```
 
 ## Shell Access
