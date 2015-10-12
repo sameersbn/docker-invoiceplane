@@ -1,3 +1,5 @@
+[![Docker Repository on Quay.io](https://quay.io/repository/sameersbn/invoiceplane/status "Docker Repository on Quay.io")](https://quay.io/repository/sameersbn/invoiceplane)
+
 # quay.io/sameersbn/invoiceplane:1.4.3-1
 
 - [Introduction](#introduction)
