@@ -102,7 +102,7 @@ docker run --name invoiceplane-nginx -d --restart=always \
   --volume /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled \
   --volumes-from invoiceplane \
   --publish 10080:80 \
-  quay.io/sameersbn/nginx:1.8.0-5
+  quay.io/sameersbn/nginx:1.8.0-8
 ```
 
 Point your browser to [http://localhost:10080/setup](http://localhost:10080/setup) to complete the setup and start using InvoicePlane.
