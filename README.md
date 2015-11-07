@@ -1,6 +1,6 @@
 [![Docker Repository on Quay.io](https://quay.io/repository/sameersbn/invoiceplane/status "Docker Repository on Quay.io")](https://quay.io/repository/sameersbn/invoiceplane)
 
-# quay.io/sameersbn/invoiceplane:1.4.3-2
+# sameersbn/invoiceplane:1.4.3-2
 
 - [Introduction](#introduction)
   - [Contributing](#contributing)
@@ -43,10 +43,12 @@ If the above recommendations do not help then [report your issue](../../issues/n
 
 ## Installation
 
-Automated builds of the image are available on [Quay.io](https://quay.io/repository/sameersbn/invoiceplane) and is the recommended method of installation.
+Automated builds of the image are available on [Dockerhub](https://hub.docker.com/r/sameersbn/invoiceplane) and is the recommended method of installation.
+
+> **Note**: Builds are also available on [Quay.io](https://quay.io/repository/sameersbn/invoiceplane)
 
 ```bash
-docker pull quay.io/sameersbn/invoiceplane:1.4.3-2
+docker pull sameersbn/invoiceplane:1.4.3-2
 ```
 
 Alternatively you can build the image yourself.
@@ -79,7 +81,7 @@ docker run --name invoiceplane-mysql -d --restart=always \
   --env 'DB_NAME=invoiceplane_db' \
   --env 'DB_USER=invoiceplane' --env 'DB_PASS=passw0rd' \
   --volume /srv/docker/invoiceplane/mysql:/var/lib/mysql \
-  quay.io/sameersbn/mysql:latest
+  sameersbn/mysql:latest
 ```
 
 Step 2. Launch the InvoicePlane container
@@ -91,7 +93,7 @@ docker run --name invoiceplane -d --restart=always \
   --env 'INVOICE_PLANE_TIMEZONE=Asia/Kolkata' \
   --volume /srv/docker/invoiceplane/invoiceplane:/var/lib/invoiceplane \
   --volume /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled \
-  quay.io/sameersbn/invoiceplane:1.4.3-2
+  sameersbn/invoiceplane:1.4.3-2
 ```
 
 Step 3. Launch a NGINX container
@@ -102,7 +104,7 @@ docker run --name invoiceplane-nginx -d --restart=always \
   --volume /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled \
   --volumes-from invoiceplane \
   --publish 10080:80 \
-  quay.io/sameersbn/nginx:1.8.0-8
+  sameersbn/nginx:1.8.0-8
 ```
 
 Point your browser to [http://localhost:10080/setup](http://localhost:10080/setup) to complete the setup and start using InvoicePlane.
@@ -129,7 +131,7 @@ To upgrade to newer releases:
   1. Download the updated Docker image:
 
   ```bash
-  docker pull quay.io/sameersbn/invoiceplane:1.4.3-2
+  docker pull sameersbn/invoiceplane:1.4.3-2
   ```
 
   2. Stop the currently running image:
@@ -149,7 +151,7 @@ To upgrade to newer releases:
   ```bash
   docker run -name invoiceplane -d \
     [OPTIONS] \
-    quay.io/sameersbn/invoiceplane:1.4.3-2
+    sameersbn/invoiceplane:1.4.3-2
   ```
 
 ## Shell Access
