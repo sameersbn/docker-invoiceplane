@@ -1,6 +1,6 @@
 [![Docker Repository on Quay.io](https://quay.io/repository/sameersbn/invoiceplane/status "Docker Repository on Quay.io")](https://quay.io/repository/sameersbn/invoiceplane)
 
-# sameersbn/invoiceplane:1.4.3-2
+# sameersbn/invoiceplane:1.4.3-3
 
 - [Introduction](#introduction)
   - [Contributing](#contributing)
@@ -48,7 +48,7 @@ Automated builds of the image are available on [Dockerhub](https://hub.docker.co
 > **Note**: Builds are also available on [Quay.io](https://quay.io/repository/sameersbn/invoiceplane)
 
 ```bash
-docker pull sameersbn/invoiceplane:1.4.3-2
+docker pull sameersbn/invoiceplane:1.4.3-3
 ```
 
 Alternatively you can build the image yourself.
@@ -93,7 +93,7 @@ docker run --name invoiceplane -d --restart=always \
   --env 'INVOICE_PLANE_TIMEZONE=Asia/Kolkata' \
   --volume /srv/docker/invoiceplane/invoiceplane:/var/lib/invoiceplane \
   --volume /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled \
-  sameersbn/invoiceplane:1.4.3-2
+  sameersbn/invoiceplane:1.4.3-3
 ```
 
 Step 3. Launch a NGINX container
@@ -131,7 +131,7 @@ To upgrade to newer releases:
   1. Download the updated Docker image:
 
   ```bash
-  docker pull sameersbn/invoiceplane:1.4.3-2
+  docker pull sameersbn/invoiceplane:1.4.3-3
   ```
 
   2. Stop the currently running image:
@@ -151,7 +151,7 @@ To upgrade to newer releases:
   ```bash
   docker run -name invoiceplane -d \
     [OPTIONS] \
-    sameersbn/invoiceplane:1.4.3-2
+    sameersbn/invoiceplane:1.4.3-3
   ```
 
 ## Shell Access
