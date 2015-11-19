@@ -54,9 +54,7 @@ docker pull sameersbn/invoiceplane:1.4.3-3
 Alternatively you can build the image yourself.
 
 ```bash
-git clone https://github.com/sameersbn/docker-invoiceplane.git
-cd docker-invoiceplane
-docker build --tag $USER/invoiceplane .
+docker build -t sameersbn/invoiceplane github.com/sameersbn/docker-invoiceplane
 ```
 
 ## Quickstart
