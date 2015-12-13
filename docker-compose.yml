@@ -8,7 +8,7 @@ mysql:
     - /srv/docker/invoiceplane/mysql:/var/lib/mysql
 
 invoicePlane:
-  image: sameersbn/invoiceplane:1.4.3-3
+  image: sameersbn/invoiceplane:1.4.3-4
   environment:
     - INVOICE_PLANE_FQDN=invoice.example.com
     - INVOICE_PLANE_TIMEZONE=Asia/Kolkata
