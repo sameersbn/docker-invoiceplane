@@ -1,7 +1,7 @@
 FROM sameersbn/php5-fpm:latest
 MAINTAINER sameer@damagehead.com
 
-ENV INVOICE_PLANE_VERSION=1.4.3 \
+ENV INVOICE_PLANE_VERSION=1.4.4 \
     INVOICE_PLANE_USER=${PHP_FPM_USER} \
     INVOICE_PLANE_INSTALL_DIR=/var/www/invoiceplane \
     INVOICE_PLANE_DATA_DIR=/var/lib/invoiceplane
