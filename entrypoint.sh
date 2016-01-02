@@ -2,6 +2,8 @@
 set -e
 source ${INVOICEPLANE_RUNTIME_DIR}/functions
 
+[[ $DEBUG == true ]] && set -x
+
 case ${1} in
   app:invoiceplane|app:nginx)
 

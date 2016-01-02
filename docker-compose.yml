@@ -13,6 +13,7 @@ invoicePlane:
   image: sameersbn/invoiceplane:1.4.4
   command: app:invoiceplane
   environment:
+    - DEBUG=false
     - TZ=Asia/Kolkata
 
     - INVOICEPLANE_TIMEZONE=Asia/Kolkata
