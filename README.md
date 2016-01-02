@@ -61,7 +61,7 @@ docker build -t sameersbn/invoiceplane github.com/sameersbn/docker-invoiceplane
 
 The quickest way to start this image is using [docker-compose](https://docs.docker.com/compose/).
 
-> Update the `INVOICE_PLANE_FQDN` and `INVOICE_PLANE_TIMEZONE` environment variables in the `docker-compose.yml` file as required.
+> Update the `INVOICEPLANE_FQDN` and `INVOICEPLANE_TIMEZONE` environment variables in the `docker-compose.yml` file as required.
 
 ```bash
 wget https://raw.githubusercontent.com/sameersbn/docker-invoiceplane/master/docker-compose.example.yml -O docker-compose.yml
@@ -87,8 +87,8 @@ Step 2. Launch the InvoicePlane container
 ```bash
 docker run --name invoiceplane -d --restart=always \
   --link invoiceplane-mysql:mysql \
-  --env 'INVOICE_PLANE_FQDN=invoice.example.com' \
-  --env 'INVOICE_PLANE_TIMEZONE=Asia/Kolkata' \
+  --env 'INVOICEPLANE_FQDN=invoice.example.com' \
+  --env 'INVOICEPLANE_TIMEZONE=Asia/Kolkata' \
   --volume /srv/docker/invoiceplane/invoiceplane:/var/lib/invoiceplane \
   --volume /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled \
   sameersbn/invoiceplane:1.4.4

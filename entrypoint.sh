@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-source ${INVOICE_PLANE_RUNTIME_DIR}/functions
+source ${INVOICEPLANE_RUNTIME_DIR}/functions
 
 # allow arguments to be passed to php5-fpm
 if [[ ${1:0:1} = '-' ]]; then

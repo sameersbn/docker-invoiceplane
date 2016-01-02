@@ -10,8 +10,8 @@ mysql:
 invoicePlane:
   image: sameersbn/invoiceplane:1.4.4
   environment:
-    - INVOICE_PLANE_FQDN=invoice.example.com
-    - INVOICE_PLANE_TIMEZONE=Asia/Kolkata
+    - INVOICEPLANE_FQDN=invoice.example.com
+    - INVOICEPLANE_TIMEZONE=Asia/Kolkata
   links:
     - mysql:mysql
   volumes:

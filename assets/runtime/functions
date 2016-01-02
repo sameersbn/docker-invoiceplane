@@ -1,26 +1,26 @@
 #!/bin/bash
 set -e
-source ${INVOICE_PLANE_RUNTIME_DIR}/env-defaults
+source ${INVOICEPLANE_RUNTIME_DIR}/env-defaults
 
 create_data_dir() {
-  mkdir -p ${INVOICE_PLANE_DATA_DIR}
-  chmod -R 0755 ${INVOICE_PLANE_DATA_DIR}
+  mkdir -p ${INVOICEPLANE_DATA_DIR}
+  chmod -R 0755 ${INVOICEPLANE_DATA_DIR}
 
-  if [[ ! -d ${INVOICE_PLANE_DATA_DIR}/uploads ]]; then
-    cp -a ${INVOICE_PLANE_INSTALL_DIR}/uploads ${INVOICE_PLANE_DATA_DIR}/
+  if [[ ! -d ${INVOICEPLANE_DATA_DIR}/uploads ]]; then
+    cp -a ${INVOICEPLANE_INSTALL_DIR}/uploads ${INVOICEPLANE_DATA_DIR}/
   fi
 
-  rm -rf ${INVOICE_PLANE_INSTALL_DIR}/uploads
-  ln -sf ${INVOICE_PLANE_DATA_DIR}/uploads ${INVOICE_PLANE_INSTALL_DIR}/
-  chown -R ${INVOICE_PLANE_USER}:${INVOICE_PLANE_USER} ${INVOICE_PLANE_DATA_DIR}
+  rm -rf ${INVOICEPLANE_INSTALL_DIR}/uploads
+  ln -sf ${INVOICEPLANE_DATA_DIR}/uploads ${INVOICEPLANE_INSTALL_DIR}/
+  chown -R ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_DATA_DIR}
 }
 
 create_vhost_configuration() {
   # install nginx configuration, if not exists
-  if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf ]]; then
-    cp ${INVOICE_PLANE_RUNTIME_DIR}/config/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
-    sed -i 's,{{INVOICE_PLANE_FQDN}},'"${INVOICE_PLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
-    sed -i 's,{{INVOICE_PLANE_INSTALL_DIR}},'"${INVOICE_PLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
+  if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf ]]; then
+    cp ${INVOICEPLANE_RUNTIME_DIR}/config/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+    sed -i 's,{{INVOICEPLANE_FQDN}},'"${INVOICEPLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+    sed -i 's,{{INVOICEPLANE_INSTALL_DIR}},'"${INVOICEPLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
   fi
 }
 
@@ -52,12 +52,12 @@ autodetect_database_connection_parameters() {
 }
 
 apply_database_settings() {
-  cp ${INVOICE_PLANE_RUNTIME_DIR}/config/invoiceplane/database.php ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+  cp ${INVOICEPLANE_RUNTIME_DIR}/config/invoiceplane/database.php ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
 }
 
 test_database_connection_settings() {
@@ -81,13 +81,13 @@ test_database_connection_settings() {
 
 
 configure_timezone() {
-  sed -i 's,{{INVOICE_PLANE_TIMEZONE}},'"${INVOICE_PLANE_TIMEZONE}"',' ${INVOICE_PLANE_INSTALL_DIR}/.user.ini
+  sed -i 's,{{INVOICEPLANE_TIMEZONE}},'"${INVOICEPLANE_TIMEZONE}"',' ${INVOICEPLANE_INSTALL_DIR}/.user.ini
 }
 
 update_volume_version() {
   CURRENT_VERSION=
-  [[ -f ${INVOICE_PLANE_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${INVOICE_PLANE_DATA_DIR}/VERSION)
-  if [[ ${INVOICE_PLANE_VERSION} != ${CURRENT_VERSION} ]]; then
-    echo -n "${INVOICE_PLANE_VERSION}" > ${INVOICE_PLANE_DATA_DIR}/VERSION
+  [[ -f ${INVOICEPLANE_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${INVOICEPLANE_DATA_DIR}/VERSION)
+  if [[ ${INVOICEPLANE_VERSION} != ${CURRENT_VERSION} ]]; then
+    echo -n "${INVOICEPLANE_VERSION}" > ${INVOICEPLANE_DATA_DIR}/VERSION
   fi
 }
