@@ -9,6 +9,7 @@ mysql:
 
 invoicePlane:
   image: sameersbn/invoiceplane:1.4.4
+  command: app:invoiceplane
   environment:
     - INVOICEPLANE_FQDN=invoice.example.com
     - INVOICEPLANE_TIMEZONE=Asia/Kolkata
@@ -16,13 +17,11 @@ invoicePlane:
     - mysql:mysql
   volumes:
     - /srv/docker/invoiceplane/invoiceplane:/var/lib/invoiceplane
-    - /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled
 
 nginx:
-  image: sameersbn/nginx:1.8.0-10
+  image: sameersbn/invoiceplane:1.4.4
+  command: app:nginx
   links:
     - invoicePlane:invoiceplane-php-fpm
-  volumes_from:
-    - invoicePlane
   ports:
     - "10080:80"

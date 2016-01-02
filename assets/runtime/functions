@@ -71,13 +71,10 @@ invoiceplane_configure_timezone() {
 }
 
 nginx_configure_virtualhost() {
-  # install nginx configuration, if not exists
-  if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf ]]; then
-    echo "Configuring InvoicePlane virtualhost..."
-    cp ${INVOICEPLANE_RUNTIME_DIR}/config/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
-    sed -i 's,{{INVOICEPLANE_FQDN}},'"${INVOICEPLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
-    sed -i 's,{{INVOICEPLANE_INSTALL_DIR}},'"${INVOICEPLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
-  fi
+  echo "Configuring InvoicePlane virtualhost..."
+  cp ${INVOICEPLANE_RUNTIME_DIR}/config/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+  sed -i 's,{{INVOICEPLANE_FQDN}},'"${INVOICEPLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+  sed -i 's,{{INVOICEPLANE_INSTALL_DIR}},'"${INVOICEPLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
 }
 
 initialize_datadir() {

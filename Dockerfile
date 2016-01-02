@@ -10,8 +10,11 @@ ENV INVOICEPLANE_VERSION=1.4.4 \
 ENV INVOICEPLANE_BUILD_DIR=${INVOICEPLANE_CACHE_DIR}/build \
     INVOICEPLANE_RUNTIME_DIR=${INVOICEPLANE_CACHE_DIR}/runtime
 
-RUN apt-get update \
- && DEBIAN_FRONTEND=noninteractive apt-get install -y php5-mysql php5-mcrypt mysql-client \
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F782CC4951600A6F0A3C300EE8C \
+ && echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu trusty main" >> /etc/apt/sources.list \
+ && apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+      php5-mysql php5-mcrypt mysql-client nginx \
  && php5enmod mcrypt \
  && rm -rf /var/lib/apt/lists/*
 
