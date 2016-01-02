@@ -53,6 +53,25 @@ invoiceplane_check_database_connection() {
   echo
 }
 
+invoiceplane_finalize_php_fpm_parameters() {
+  # is a invoiceplane-php-fpm container linked?
+  if [[ -n ${PHP_FPM_PORT_9000_TCP_ADDR} ]]; then
+    INVOICEPLANE_PHP_FPM_HOST=${INVOICEPLANE_PHP_FPM_HOST:-$PHP_FPM_PORT_9000_TCP_ADDR}
+    INVOICEPLANE_PHP_FPM_PORT=${INVOICEPLANE_PHP_FPM_PORT:-$PHP_FPM_PORT_9000_TCP_PORT}
+  fi
+
+  if [[ -z ${INVOICEPLANE_PHP_FPM_HOST} ]]; then
+    echo
+    echo "ERROR: "
+    echo "  Please configure the php-fpm connection. Aborting..."
+    echo
+    return 1
+  fi
+
+  # use default php-fpm port number if it is still not set
+  INVOICEPLANE_PHP_FPM_PORT=${INVOICEPLANE_PHP_FPM_PORT:-9000}
+}
+
 invoiceplane_configure_database() {
   echo -n "Configuring InvoicePlane::database"
   invoiceplane_finalize_database_parameters
@@ -72,9 +91,13 @@ invoiceplane_configure_timezone() {
 
 nginx_configure_virtualhost() {
   echo "Configuring InvoicePlane virtualhost..."
+  invoiceplane_finalize_php_fpm_parameters
+
   cp ${INVOICEPLANE_RUNTIME_DIR}/config/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
   sed -i 's,{{INVOICEPLANE_FQDN}},'"${INVOICEPLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
   sed -i 's,{{INVOICEPLANE_INSTALL_DIR}},'"${INVOICEPLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+  sed -i 's,{{INVOICEPLANE_PHP_FPM_HOST}},'"${INVOICEPLANE_PHP_FPM_HOST}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+  sed -i 's,{{INVOICEPLANE_PHP_FPM_PORT}},'"${INVOICEPLANE_PHP_FPM_PORT}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
 }
 
 initialize_datadir() {

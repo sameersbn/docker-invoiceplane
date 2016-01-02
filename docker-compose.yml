@@ -13,6 +13,9 @@ invoicePlane:
   environment:
     - INVOICEPLANE_FQDN=invoice.example.com
     - INVOICEPLANE_TIMEZONE=Asia/Kolkata
+
+    - INVOICEPLANE_PHP_FPM_HOST=
+    - INVOICEPLANE_PHP_FPM_PORT=
   links:
     - mysql:mysql
   volumes:
@@ -22,6 +25,6 @@ nginx:
   image: sameersbn/invoiceplane:1.4.4
   command: app:nginx
   links:
-    - invoicePlane:invoiceplane-php-fpm
+    - invoicePlane:php-fpm
   ports:
     - "10080:80"
