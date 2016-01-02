@@ -3,6 +3,8 @@ set -e
 source ${INVOICEPLANE_RUNTIME_DIR}/env-defaults
 
 INVOICEPLANE_TEMPLATES_DIR=${INVOICEPLANE_RUNTIME_DIR}/config
+INVOICEPLANE_DATABASE_CONFIG=${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+INVOICEPLANE_NGINX_CONFIG=/etc/nginx/sites-enabled/InvoicePlane.conf
 
 ## Execute a command as OWNCLOUD_USER
 exec_as_invoiceplane() {
@@ -132,7 +134,7 @@ invoiceplane_configure_database() {
   invoiceplane_finalize_database_parameters
   invoiceplane_check_database_connection
 
-  update_template ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php \
+  update_template ${INVOICEPLANE_DATABASE_CONFIG} \
     DB_HOST \
     DB_PORT \
     DB_USER \
@@ -147,7 +149,7 @@ invoiceplane_configure_timezone() {
 nginx_configure_virtualhost() {
   echo "Configuring InvoicePlane virtualhost..."
   invoiceplane_finalize_php_fpm_parameters
-  update_template /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf \
+  update_template ${INVOICEPLANE_NGINX_CONFIG} \
     INVOICEPLANE_FQDN \
     INVOICEPLANE_PHP_FPM_HOST \
     INVOICEPLANE_PHP_FPM_PORT
@@ -175,11 +177,11 @@ initialize_datadir() {
 
 install_configuration_templates() {
   echo "Installing configuration templates..."
-  install_template ${INVOICEPLANE_USER} invoiceplane/database.php ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php 0644
+  install_template ${INVOICEPLANE_USER} invoiceplane/database.php ${INVOICEPLANE_DATABASE_CONFIG} 0644
 
-  if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf ]]; then
-    install_template root nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf 0644
-    update_template /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf INVOICEPLANE_INSTALL_DIR
+  if [[ -d /etc/nginx/sites-enabled && ! -f ${INVOICEPLANE_NGINX_CONFIG} ]]; then
+    install_template root nginx/InvoicePlane.conf ${INVOICEPLANE_NGINX_CONFIG} 0644
+    update_template ${INVOICEPLANE_NGINX_CONFIG} INVOICEPLANE_INSTALL_DIR
   fi
 }
 
