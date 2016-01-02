@@ -25,8 +25,7 @@ COPY assets/runtime/ ${INVOICEPLANE_RUNTIME_DIR}/
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
-VOLUME ["${INVOICEPLANE_INSTALL_DIR}", "${INVOICEPLANE_DATA_DIR}"]
-
+VOLUME ["${INVOICEPLANE_DATA_DIR}"]
 WORKDIR ${INVOICEPLANE_INSTALL_DIR}
 ENTRYPOINT ["/sbin/entrypoint.sh"]
 CMD ["app:invoiceplane"]
