@@ -4,6 +4,15 @@ source ${INVOICEPLANE_RUNTIME_DIR}/env-defaults
 
 INVOICEPLANE_TEMPLATES_DIR=${INVOICEPLANE_RUNTIME_DIR}/config
 
+## Execute a command as OWNCLOUD_USER
+exec_as_invoiceplane() {
+  if [[ $(whoami) == ${INVOICEPLANE_USER} ]]; then
+    $@
+  else
+    sudo -HEu ${INVOICEPLANE_USER} "$@"
+  fi
+}
+
 ## Copies configuration template in ${INVOICEPLANE_TEMPLATES_DIR} to the destination as the specified USER
 # $1: copy-as user
 # $2: source file
@@ -95,11 +104,11 @@ invoiceplane_configure_database() {
   invoiceplane_finalize_database_parameters
   invoiceplane_check_database_connection
 
-  sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
-  sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  exec_as_invoiceplane sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  exec_as_invoiceplane sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  exec_as_invoiceplane sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  exec_as_invoiceplane sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  exec_as_invoiceplane sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
 }
 
 invoiceplane_configure_timezone() {
