@@ -1,14 +1,6 @@
 #!/bin/bash
 set -e
-
-INVOICE_PLANE_FQDN=${INVOICE_PLANE_FQDN:-localhost}
-INVOICE_PLANE_TIMEZONE=${INVOICE_PLANE_TIMEZONE:-UTC}
-
-DB_HOST=${DB_HOST:-}
-DB_PORT=${DB_PORT:-}
-DB_USER=${DB_USER:-}
-DB_PASS=${DB_PASS:-}
-DB_NAME=${DB_NAME:-}
+source ${INVOICE_PLANE_RUNTIME_DIR}/env-defaults
 
 create_data_dir() {
   mkdir -p ${INVOICE_PLANE_DATA_DIR}
