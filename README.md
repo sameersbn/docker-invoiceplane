@@ -10,6 +10,8 @@
   - [Quickstart](#quickstart)
   - [Persistence](#persistence)
 - [Maintenance](#maintenance)
+  - [Creating backups](#creating-backups)
+  - [Restoring backups](#restoring-backups)
   - [Upgrading](#upgrading)
   - [Shell Access](#shell-access)
 
@@ -59,53 +61,51 @@ docker build -t sameersbn/invoiceplane github.com/sameersbn/docker-invoiceplane
 
 ## Quickstart
 
-The quickest way to start this image is using [docker-compose](https://docs.docker.com/compose/).
-
-> Update the `INVOICEPLANE_FQDN` and `INVOICEPLANE_TIMEZONE` environment variables in the `docker-compose.yml` file as required.
+The quickest way to start using this image is with [docker-compose](https://docs.docker.com/compose/).
 
 ```bash
 wget https://raw.githubusercontent.com/sameersbn/docker-invoiceplane/master/docker-compose.example.yml -O docker-compose.yml
+```
+
+Update the `INVOICEPLANE_FQDN` and `INVOICEPLANE_TIMEZONE` environment variables in the `docker-compose.yml` file as required.
+
+```bash
 docker-compose up
 ```
 
-In addition to the InvoicePlane container, MySQL and NGINX containers are also started to provide the infrastructure required to get InvoicePlane up and running.
-
-Alternatively, you can start InvoicePlance and the supporting MySQL and NGINX containers manually using the Docker command line.
+Alternatively, you can start InvoicePlane manually using the Docker command line.
 
 Step 1. Launch a MySQL container
 
 ```bash
-docker run --name invoiceplane-mysql -d --restart=always \
+docker run --name invoiceplane-mysql -itd --restart=always \
   --env 'DB_NAME=invoiceplane_db' \
-  --env 'DB_USER=invoiceplane' --env 'DB_PASS=passw0rd' \
+  --env 'DB_USER=invoiceplane' --env 'DB_PASS=password' \
   --volume /srv/docker/invoiceplane/mysql:/var/lib/mysql \
   sameersbn/mysql:latest
 ```
 
-Step 2. Launch the InvoicePlane container
+Step 2. Launch the InvoicePlane php-fpm container
 
 ```bash
-docker run --name invoiceplane -d --restart=always \
+docker run --name invoiceplane -itd --restart=always \
   --link invoiceplane-mysql:mysql \
   --env 'INVOICEPLANE_FQDN=invoice.example.com' \
   --env 'INVOICEPLANE_TIMEZONE=Asia/Kolkata' \
   --volume /srv/docker/invoiceplane/invoiceplane:/var/lib/invoiceplane \
-  --volume /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled \
-  sameersbn/invoiceplane:1.4.4
+  sameersbn/invoiceplane:1.4.4 app:invoiceplane
 ```
 
-Step 3. Launch a NGINX container
+Step 3. Launch a NGINX frontend container
 
 ```bash
-docker run --name invoiceplane-nginx -d --restart=always \
-  --link invoiceplane:invoiceplane-php-fpm \
-  --volume /srv/docker/invoiceplane/nginx/sites-enabled:/etc/nginx/sites-enabled \
-  --volumes-from invoiceplane \
+docker run --name invoiceplane-nginx -itd --restart=always \
+  --link invoiceplane:php-fpm \
   --publish 10080:80 \
-  sameersbn/nginx:1.8.0-10
+  sameersbn/invoiceplane:1.4.4 app:nginx
 ```
 
-Point your browser to [http://localhost:10080/setup](http://localhost:10080/setup) to complete the setup and start using InvoicePlane.
+Point your browser to [http://invoice.example.com:10080/setup](http://invoice.example.com:10080/setup) to complete the setup.
 
 ## Persistence
 
@@ -121,6 +121,61 @@ chcon -Rt svirt_sandbox_file_t /srv/docker/invoiceplane
 ```
 
 # Maintenance
+
+## Creating backups
+
+The image allows users to create backups of the InvoicePlane installation using the `app:backup:create` command or the `invoiceplane-backup-create` helper script. The generated backup consists of uploaded files and the sql database.
+
+Before generating a backup — stop and remove the running instance.
+
+```bash
+docker stop invoiceplane && docker rm invoiceplane
+```
+
+Relaunch the container with the `app:backup:create` argument.
+
+```bash
+docker run --name invoiceplane -it --rm [OPTIONS] \
+  sameersbn/invoiceplane:1.4.4 app:backup:create
+```
+
+The backup will be created in the `backups/` folder of the [Persistent](#persistence) volume. You can change the location using the `INVOICEPLANE_BACKUPS_DIR` configuration parameter.
+
+> **NOTE**
+>
+> Backups can also be generated on a running instance using:
+>
+>  ```bash
+>  docker exec -it invoiceplane invoiceplane-backup-create
+>  ```
+
+By default backups are held indefinitely. Using the `INVOICEPLANE_BACKUPS_EXPIRY` parameter you can configure how long (in seconds) you wish to keep the backups. For example, setting `INVOICEPLANE_BACKUPS_EXPIRY=604800` will remove backups that are older than 7 days. Old backups are only removed when creating a new backup, never automatically.
+
+## Restoring Backups
+
+Backups created using instructions from the [Creating backups](#creating-backups) section can be restored using the `app:backup:restore` argument.
+
+Before restoring a backup — stop and remove the running instance.
+
+```bash
+docker stop invoiceplane && docker rm invoiceplane
+```
+
+Relaunch the container with the `app:backup:restore` argument. Ensure you launch the container in the interactive mode `-it`.
+
+```bash
+docker run --name invoiceplane -it --rm [OPTIONS] \
+  sameersbn/invoiceplane:1.4.4 app:backup:restore
+```
+
+A list of existing backups will be displayed. Select a backup you wish to restore.
+
+To avoid this interaction you can specify the backup filename using the `BACKUP` argument to `app:backup:restore`, eg.
+
+```bash
+docker run --name invoiceplane -it --rm [OPTIONS] \
+  sameersbn/invoiceplane:1.4.4 app:backup:restore BACKUP=1417624827_invoiceplane_backup.tar
+```
 
 ## Upgrading
 
@@ -147,12 +202,12 @@ To upgrade to newer releases:
   4. Start the updated image
 
   ```bash
-  docker run -name invoiceplane -d \
+  docker run -name invoiceplane -itd \
     [OPTIONS] \
     sameersbn/invoiceplane:1.4.4
   ```
 
-Point your browser to [http://localhost:10080/setup](http://localhost:10080/setup) to complete the upgrade.
+Point your browser to [http://invoice.example.com:10080/setup](http://invoice.example.com:10080/setup) to complete the upgrade.
 
 ## Shell Access
 
