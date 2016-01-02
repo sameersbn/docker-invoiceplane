@@ -29,6 +29,34 @@ install_template() {
   chmod ${MODE} ${DEST}
 }
 
+## Replace placeholders with values
+# $1: file with placeholders to replace
+# $x: placeholders to replace
+update_template() {
+  local FILE=${1?missing argument}
+  shift
+
+  [[ ! -f ${FILE} ]] && return 1
+
+  local VARIABLES=($@)
+  local USR=$(stat -c %U ${FILE})
+  local tmp_file=$(mktemp)
+  cp -a "${FILE}" ${tmp_file}
+
+  local variable
+  for variable in ${VARIABLES[@]}; do
+    # Keep the compatibilty: {{VAR}} => ${VAR}
+    sed -ri "s/[{]{2}$variable[}]{2}/\${$variable}/g" ${tmp_file}
+  done
+
+  # Replace placeholders
+  (
+    export ${VARIABLES[@]}
+    local IFS=":"; sudo -HEu ${USR} envsubst "${VARIABLES[*]/#/$}" < ${tmp_file} > ${FILE}
+  )
+  rm -f ${tmp_file}
+}
+
 invoiceplane_finalize_database_parameters() {
   # is a mysql container linked?
   if [[ -n ${MYSQL_PORT_3306_TCP_ADDR} ]]; then
@@ -104,23 +132,25 @@ invoiceplane_configure_database() {
   invoiceplane_finalize_database_parameters
   invoiceplane_check_database_connection
 
-  exec_as_invoiceplane sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
-  exec_as_invoiceplane sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
-  exec_as_invoiceplane sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
-  exec_as_invoiceplane sed -i 's/{{DB_PASS}}/'"${DB_PASS}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
-  exec_as_invoiceplane sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  update_template ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php \
+    DB_HOST \
+    DB_PORT \
+    DB_USER \
+    DB_PASS \
+    DB_NAME
 }
 
 invoiceplane_configure_timezone() {
-  sed -i 's,{{INVOICEPLANE_TIMEZONE}},'"${INVOICEPLANE_TIMEZONE}"',' ${INVOICEPLANE_INSTALL_DIR}/.user.ini
+  update_template ${INVOICEPLANE_INSTALL_DIR}/.user.ini INVOICEPLANE_TIMEZONE
 }
 
 nginx_configure_virtualhost() {
   echo "Configuring InvoicePlane virtualhost..."
   invoiceplane_finalize_php_fpm_parameters
-  sed -i 's,{{INVOICEPLANE_FQDN}},'"${INVOICEPLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
-  sed -i 's,{{INVOICEPLANE_PHP_FPM_HOST}},'"${INVOICEPLANE_PHP_FPM_HOST}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
-  sed -i 's,{{INVOICEPLANE_PHP_FPM_PORT}},'"${INVOICEPLANE_PHP_FPM_PORT}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+  update_template /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf \
+    INVOICEPLANE_FQDN \
+    INVOICEPLANE_PHP_FPM_HOST \
+    INVOICEPLANE_PHP_FPM_PORT
 }
 
 initialize_datadir() {
@@ -149,7 +179,7 @@ install_configuration_templates() {
 
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf ]]; then
     install_template root nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf 0644
-    sed -i 's,{{INVOICEPLANE_INSTALL_DIR}},'"${INVOICEPLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+    update_template /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf INVOICEPLANE_INSTALL_DIR
   fi
 }
 

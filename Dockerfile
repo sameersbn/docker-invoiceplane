@@ -14,7 +14,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F7
  && echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu trusty main" >> /etc/apt/sources.list \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-      php5-mysql php5-mcrypt mysql-client nginx \
+      php5-mysql php5-mcrypt mysql-client nginx gettext-base \
  && php5enmod mcrypt \
  && rm -rf /var/lib/apt/lists/*
 
