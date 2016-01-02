@@ -2,22 +2,27 @@
 set -e
 source ${INVOICEPLANE_RUNTIME_DIR}/functions
 
-# allow arguments to be passed to php5-fpm
-if [[ ${1:0:1} = '-' ]]; then
-  EXTRA_ARGS="$@"
-  set --
-elif [[ ${1} == php5-fpm || ${1} == $(which php5-fpm) ]]; then
-  EXTRA_ARGS="${@:2}"
-  set --
-fi
+case ${1} in
+  app:invoiceplane)
 
-initialize_system
-configure_nginx
-configure_invoiceplane
+    initialize_system
+    configure_nginx
 
-# default behaviour is to launch php5-fpm
-if [[ -z ${1} ]]; then
-  exec start-stop-daemon --start --chuid root:root --exec $(which php5-fpm) -- ${EXTRA_ARGS}
-else
-  exec "$@"
-fi
+    case ${1} in
+      app:invoiceplane)
+        configure_invoiceplane
+        echo "Starting InvoicePlane php5-fpm..."
+        exec $(which php5-fpm)
+        ;;
+    esac
+    ;;
+  app:help)
+    echo "Available options:"
+    echo " app:invoiceplane     - Starts the InvoicePlane php5-fpm server (default)"
+    echo " app:help             - Displays the help"
+    echo " [command]            - Execute the specified command, eg. bash."
+    ;;
+  *)
+    exec "$@"
+    ;;
+esac
