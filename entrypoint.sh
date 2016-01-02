@@ -12,8 +12,7 @@ elif [[ ${1} == php5-fpm || ${1} == $(which php5-fpm) ]]; then
 fi
 
 initialize_system
-nginx_configure_virtualhost
-
+configure_nginx
 configure_invoiceplane
 
 # default behaviour is to launch php5-fpm

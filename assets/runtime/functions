@@ -109,3 +109,8 @@ configure_invoiceplane() {
   invoiceplane_configure_database
   invoiceplane_configure_timezone
 }
+
+configure_nginx() {
+  echo "Configuring nginx..."
+  nginx_configure_virtualhost
+}
