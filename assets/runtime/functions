@@ -6,6 +6,36 @@ INVOICEPLANE_TEMPLATES_DIR=${INVOICEPLANE_RUNTIME_DIR}/config
 INVOICEPLANE_DATABASE_CONFIG=${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
 INVOICEPLANE_NGINX_CONFIG=/etc/nginx/sites-enabled/InvoicePlane.conf
 
+# Compares two version strings `a` and `b`
+# Returns
+#   - negative integer, if `a` is less than `b`
+#   - 0, if `a` and `b` are equal
+#   - non-negative integer, if `a` is greater than `b`
+vercmp() {
+  expr '(' "$1" : '\([^.]*\)' ')' '-' '(' "$2" : '\([^.]*\)' ')' '|' \
+       '(' "$1.0" : '[^.]*[.]\([^.]*\)' ')' '-' '(' "$2.0" : '[^.]*[.]\([^.]*\)' ')' '|' \
+       '(' "$1.0.0" : '[^.]*[.][^.]*[.]\([^.]*\)' ')' '-' '(' "$2.0.0" : '[^.]*[.][^.]*[.]\([^.]*\)' ')' '|' \
+       '(' "$1.0.0.0" : '[^.]*[.][^.]*[.][^.]*[.]\([^.]*\)' ')' '-' '(' "$2.0.0.0" : '[^.]*[.][^.]*[.][^.]*[.]\([^.]*\)' ')'
+}
+
+# Read YAML file from Bash script
+# Credits: https://gist.github.com/pkuczynski/8665367
+parse_yaml() {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\)\($w\)$s:$s\"\(.*\)\"$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p" $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
+
 ## Execute a command as OWNCLOUD_USER
 exec_as_invoiceplane() {
   if [[ $(whoami) == ${INVOICEPLANE_USER} ]]; then
@@ -200,6 +230,55 @@ backup_create_archive() {
   done
 }
 
+backup_restore_unpack() {
+  local backup=${1}
+  echo "Unpacking ${backup}..."
+  tar xf ${INVOICEPLANE_BACKUPS_DIR}/${backup} -C ${INVOICEPLANE_BACKUPS_DIR}
+}
+
+backup_restore_validate() {
+  eval $(parse_yaml ${INVOICEPLANE_BACKUPS_DIR}/backup_information.yml backup_)
+
+  ## version check
+  if [[ $(vercmp ${INVOICEPLANE_VERSION} ${backup_info_invoiceplane_version}) -lt 0 ]]; then
+    echo
+    echo "ERROR: "
+    echo "  Cannot restore backup for version ${backup_info_invoiceplane_version} on a ${INVOICEPLANE_VERSION} instance."
+    echo "  You can only restore backups generated for versions <= ${INVOICEPLANE_VERSION}."
+    echo "  Please use sameersbn/invoiceplane:${backup_info_invoiceplane_version} to restore this backup."
+    echo "  Cannot continue. Aborting!"
+    echo
+    return 1
+  fi
+  exec_as_invoiceplane rm -rf ${INVOICEPLANE_BACKUPS_DIR}/backup_information.yml
+}
+
+backup_restore_database() {
+  echo "Restoring MySQL database..."
+  gzip -dc ${INVOICEPLANE_BACKUPS_DIR}/database.sql.gz | \
+    MYSQL_PWD=${DB_PASS} mysql \
+      --host ${DB_HOST} --port ${DB_PORT} \
+      --user ${DB_USER} ${DB_NAME}
+  exec_as_invoiceplane rm -rf ${INVOICEPLANE_BACKUPS_DIR}/database.sql.gz
+}
+
+backup_restore_directory() {
+  local directory=${1}
+  local dirname=$(basename ${directory})
+  local extension=${2}
+
+  echo "Restoring ${dirname}..."
+  files=($(shopt -s nullglob;shopt -s dotglob;echo ${directory}/*))
+  if [[ ${#files[@]} -gt 0 ]]; then
+    exec_as_invoiceplane mv ${directory} ${directory}.$(date +%s)
+  else
+    exec_as_invoiceplane rm -rf ${directory}
+  fi
+  exec_as_invoiceplane mkdir -p ${directory}
+  exec_as_invoiceplane tar -xf ${INVOICEPLANE_BACKUPS_DIR}/${dirname}${extension} -C ${directory}
+  exec_as_invoiceplane rm -rf ${INVOICEPLANE_BACKUPS_DIR}/${dirname}${extension}
+}
+
 initialize_datadir() {
   echo "Initializing datadir..."
   chmod 0755 ${INVOICEPLANE_DATA_DIR}
@@ -260,4 +339,54 @@ backup_create() {
   backup_dump_directory ${INVOICEPLANE_UPLOADS_DIR} .tar.gz
   backup_dump_information
   backup_create_archive backup_information.yml database.sql.gz uploads.tar.gz
+}
+
+backup_restore() {
+  local tar_file=
+  local interactive=true
+  for arg in $@
+  do
+    if [[ $arg == BACKUP=* ]]; then
+      tar_file=${arg##BACKUP=}
+      interactive=false
+      break
+    fi
+  done
+
+  # user needs to select the backup to restore
+  if [[ $interactive == true ]]; then
+    num_backups=$(ls ${INVOICEPLANE_BACKUPS_DIR}/*_invoiceplane_backup.tar | wc -l)
+    if [[ $num_backups -eq 0 ]]; then
+      echo "No backups exist at ${INVOICEPLANE_BACKUPS_DIR}. Cannot continue."
+      return 1
+    fi
+
+    echo
+    for b in $(ls ${INVOICEPLANE_BACKUPS_DIR} | grep _invoiceplane_backup.tar | sort -r)
+    do
+      echo "‣ $b (created at $(date --date="@${b%%_invoiceplane_backup.tar}" +'%d %b, %G - %H:%M:%S %Z'))"
+    done
+    echo
+
+    read -p "Select a backup to restore: " tar_file
+
+    if [[ -z ${tar_file} ]]; then
+      echo "Backup not specified. Exiting..."
+      return 1
+    fi
+  fi
+
+  if [[ ! -f ${INVOICEPLANE_BACKUPS_DIR}/${tar_file} ]]; then
+    echo "Specified backup does not exist. Aborting..."
+    return 1
+  fi
+
+  echo -n "Checking database connection"
+  invoiceplane_finalize_database_parameters
+  invoiceplane_check_database_connection
+
+  backup_restore_unpack ${tar_file}
+  backup_restore_validate
+  backup_restore_database
+  backup_restore_directory ${INVOICEPLANE_UPLOADS_DIR} .tar.gz
 }
