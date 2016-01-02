@@ -2,6 +2,24 @@
 set -e
 source ${INVOICEPLANE_RUNTIME_DIR}/env-defaults
 
+INVOICEPLANE_TEMPLATES_DIR=${INVOICEPLANE_RUNTIME_DIR}/config
+
+## Copies configuration template in ${INVOICEPLANE_TEMPLATES_DIR} to the destination as the specified USER
+# $1: copy-as user
+# $2: source file
+# $3: destination location
+# $4: mode of destination
+install_template() {
+  local USR=${1}
+  local SRC=${2}
+  local DEST=${3}
+  local MODE=${4:-0644}
+  if [[ -f ${INVOICEPLANE_TEMPLATES_DIR}/${SRC} ]]; then
+    sudo -HEu ${USR} cp ${INVOICEPLANE_TEMPLATES_DIR}/${SRC} ${DEST}
+  fi
+  chmod ${MODE} ${DEST}
+}
+
 invoiceplane_finalize_database_parameters() {
   # is a mysql container linked?
   if [[ -n ${MYSQL_PORT_3306_TCP_ADDR} ]]; then
@@ -77,7 +95,7 @@ invoiceplane_configure_database() {
   invoiceplane_finalize_database_parameters
   invoiceplane_check_database_connection
 
-  cp ${INVOICEPLANE_RUNTIME_DIR}/config/invoiceplane/database.php ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
+  install_template ${INVOICEPLANE_USER} invoiceplane/database.php ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php 0644
   sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
   sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
   sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
@@ -93,7 +111,7 @@ nginx_configure_virtualhost() {
   echo "Configuring InvoicePlane virtualhost..."
   invoiceplane_finalize_php_fpm_parameters
 
-  cp ${INVOICEPLANE_RUNTIME_DIR}/config/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+  install_template root nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf 0644
   sed -i 's,{{INVOICEPLANE_FQDN}},'"${INVOICEPLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
   sed -i 's,{{INVOICEPLANE_INSTALL_DIR}},'"${INVOICEPLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
   sed -i 's,{{INVOICEPLANE_PHP_FPM_HOST}},'"${INVOICEPLANE_PHP_FPM_HOST}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
