@@ -2,56 +2,62 @@
 set -e
 source ${INVOICEPLANE_RUNTIME_DIR}/env-defaults
 
-create_data_dir() {
-  mkdir -p ${INVOICEPLANE_DATA_DIR}
-  chmod -R 0755 ${INVOICEPLANE_DATA_DIR}
-
-  if [[ ! -d ${INVOICEPLANE_DATA_DIR}/uploads ]]; then
-    cp -a ${INVOICEPLANE_INSTALL_DIR}/uploads ${INVOICEPLANE_DATA_DIR}/
-  fi
-
-  rm -rf ${INVOICEPLANE_INSTALL_DIR}/uploads
-  ln -sf ${INVOICEPLANE_DATA_DIR}/uploads ${INVOICEPLANE_INSTALL_DIR}/
-  chown -R ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_DATA_DIR}
-}
-
-create_vhost_configuration() {
-  # install nginx configuration, if not exists
-  if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf ]]; then
-    cp ${INVOICEPLANE_RUNTIME_DIR}/config/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
-    sed -i 's,{{INVOICEPLANE_FQDN}},'"${INVOICEPLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
-    sed -i 's,{{INVOICEPLANE_INSTALL_DIR}},'"${INVOICEPLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
-  fi
-}
-
-autodetect_database_connection_parameters() {
+invoiceplane_finalize_database_parameters() {
   # is a mysql container linked?
   if [[ -n ${MYSQL_PORT_3306_TCP_ADDR} ]]; then
     DB_TYPE=${DB_TYPE:-mysql}
-    DB_HOST=${DB_HOST:-${MYSQL_PORT_3306_TCP_ADDR}}
-    DB_PORT=${DB_PORT:-${MYSQL_PORT_3306_TCP_PORT}}
+    DB_HOST=${DB_HOST:-$MYSQL_PORT_3306_TCP_ADDR}
+    DB_PORT=${DB_PORT:-$MYSQL_PORT_3306_TCP_PORT}
 
     # support for linked sameersbn/mysql image
-    DB_USER=${DB_USER:-${MYSQL_ENV_DB_USER}}
-    DB_PASS=${DB_PASS:-${MYSQL_ENV_DB_PASS}}
-    DB_NAME=${DB_NAME:-${MYSQL_ENV_DB_NAME}}
+    DB_USER=${DB_USER:-$MYSQL_ENV_DB_USER}
+    DB_PASS=${DB_PASS:-$MYSQL_ENV_DB_PASS}
+    DB_NAME=${DB_NAME:-$MYSQL_ENV_DB_NAME}
 
-    # support for linked mysql, orchardup/mysql and enturylink/mysql image
-    DB_USER=${DB_USER:-${MYSQL_ENV_MYSQL_USER}}
-    DB_PASS=${DB_PASS:-${MYSQL_ENV_MYSQL_PASSWORD}}
-    DB_NAME=${DB_NAME:-${MYSQL_ENV_MYSQL_DATABASE}}
+    # support for linked orchardup/mysql and enturylink/mysql image
+    # also supports official mysql image
+    DB_USER=${DB_USER:-$MYSQL_ENV_MYSQL_USER}
+    DB_PASS=${DB_PASS:-$MYSQL_ENV_MYSQL_PASSWORD}
+    DB_NAME=${DB_NAME:-$MYSQL_ENV_MYSQL_DATABASE}
   fi
 
+  # set default port, user and database
   DB_PORT=${DB_PORT:-3306}
+  DB_USER=${DB_USER:-root}
+  DB_NAME=${DB_NAME:-invoiceplane_db}
+
   if [[ -z ${DB_HOST} ]]; then
+    echo
     echo "ERROR: "
     echo "  Please configure the database connection."
     echo "  Cannot continue without a database. Aborting..."
-    exit 1
+    echo
+    return 1
   fi
 }
 
-apply_database_settings() {
+invoiceplane_check_database_connection() {
+  prog="mysqladmin -h ${DB_HOST} -P ${DB_PORT} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} status"
+  timeout=60
+  while ! ${prog} >/dev/null 2>&1
+  do
+    timeout=$(expr $timeout - 1)
+    if [[ $timeout -eq 0 ]]; then
+      echo
+      echo "Could not connect to database server. Aborting..."
+      return 1
+    fi
+    echo -n "."
+    sleep 1
+  done
+  echo
+}
+
+invoiceplane_configure_database() {
+  echo -n "Configuring InvoicePlane::database"
+  invoiceplane_finalize_database_parameters
+  invoiceplane_check_database_connection
+
   cp ${INVOICEPLANE_RUNTIME_DIR}/config/invoiceplane/database.php ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
   sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
   sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
@@ -60,34 +66,37 @@ apply_database_settings() {
   sudo -HEu ${INVOICEPLANE_USER} sed -i 's/{{DB_NAME}}/'"${DB_NAME}"'/' ${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
 }
 
-test_database_connection_settings() {
-  # due to the nature of docker and its use cases, we allow some time
-  # for the database server to come online before continuing
-  timeout=60
-  echo -n "Waiting for database server to accept connections"
-  while ! mysqladmin -h ${DB_HOST} -P ${DB_PORT} -u ${DB_USER} ${DB_PASS:+-p$DB_PASS} status >/dev/null 2>&1
-  do
-    timeout=$(expr $timeout - 1)
-    if [[ $timeout -eq 0 ]]; then
-      echo
-      echo "Could not connect to database server. Aborting..."
-      exit 1
-    fi
-    echo -n "."
-    sleep 1
-  done
-  echo
-}
-
-
-configure_timezone() {
+invoiceplane_configure_timezone() {
   sed -i 's,{{INVOICEPLANE_TIMEZONE}},'"${INVOICEPLANE_TIMEZONE}"',' ${INVOICEPLANE_INSTALL_DIR}/.user.ini
 }
 
-update_volume_version() {
+nginx_configure_virtualhost() {
+  # install nginx configuration, if not exists
+  if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf ]]; then
+    echo "Configuring InvoicePlane virtualhost..."
+    cp ${INVOICEPLANE_RUNTIME_DIR}/config/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+    sed -i 's,{{INVOICEPLANE_FQDN}},'"${INVOICEPLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+    sed -i 's,{{INVOICEPLANE_INSTALL_DIR}},'"${INVOICEPLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICEPLANE_FQDN}.conf
+  fi
+}
+
+initialize_datadir() {
+  echo "Initializing datadir..."
+  chmod 0755 ${INVOICEPLANE_DATA_DIR}
+  chown ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_DATA_DIR}
+
+  # create uploads directory
+  if [[ ! -d ${INVOICEPLANE_UPLOADS_DIR} ]]; then
+    cp -a ${INVOICEPLANE_INSTALL_DIR}/uploads ${INVOICEPLANE_UPLOADS_DIR}
+  fi
+  rm -rf ${INVOICEPLANE_INSTALL_DIR}/uploads
+  ln -sf ${INVOICEPLANE_UPLOADS_DIR} ${INVOICEPLANE_INSTALL_DIR}/uploads
+
   CURRENT_VERSION=
   [[ -f ${INVOICEPLANE_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${INVOICEPLANE_DATA_DIR}/VERSION)
   if [[ ${INVOICEPLANE_VERSION} != ${CURRENT_VERSION} ]]; then
     echo -n "${INVOICEPLANE_VERSION}" > ${INVOICEPLANE_DATA_DIR}/VERSION
   fi
+
+  chown -R ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_UPLOADS_DIR}
 }
