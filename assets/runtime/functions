@@ -160,6 +160,46 @@ nginx_configure_virtualhost() {
     INVOICEPLANE_PHP_FPM_PORT
 }
 
+backup_dump_database() {
+  echo "Dumping MySQL database ${DB_NAME}..."
+  exec_as_invoiceplane MYSQL_PWD=${DB_PASS} mysqldump --lock-tables --add-drop-table \
+    --host ${DB_HOST} --port ${DB_PORT} \
+    --user ${DB_USER} ${DB_NAME} > ${INVOICEPLANE_BACKUPS_DIR}/database.sql
+  exec_as_invoiceplane gzip -f ${INVOICEPLANE_BACKUPS_DIR}/database.sql
+}
+
+backup_dump_directory() {
+  local directory=${1}
+  local dirname=$(basename ${directory})
+  local extension=${2}
+
+  echo "Dumping ${dirname}..."
+  exec_as_invoiceplane tar -cf ${INVOICEPLANE_BACKUPS_DIR}/${dirname}${extension} -C ${directory} .
+}
+
+backup_dump_information() {
+  (
+    echo "info:"
+    echo "  invoiceplane_version: ${INVOICEPLANE_VERSION}"
+    echo "  database_adapter: $(invoiceplane_get_database_param dbdriver)"
+    echo "  created_at: $(date)"
+  ) > ${INVOICEPLANE_BACKUPS_DIR}/backup_information.yml
+  chown ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_BACKUPS_DIR}/backup_information.yml
+}
+
+backup_create_archive() {
+  local tar_file="$(date +%s)_invoiceplane_backup.tar"
+
+  echo "Creating backup archive: ${tar_file}..."
+  exec_as_invoiceplane tar -cf ${INVOICEPLANE_BACKUPS_DIR}/${tar_file} -C ${INVOICEPLANE_BACKUPS_DIR} $@
+  exec_as_invoiceplane chmod 0755 ${INVOICEPLANE_BACKUPS_DIR}/${tar_file}
+
+  for f in $@
+  do
+    exec_as_invoiceplane rm -rf ${INVOICEPLANE_BACKUPS_DIR}/${f}
+  done
+}
+
 initialize_datadir() {
   echo "Initializing datadir..."
   chmod 0755 ${INVOICEPLANE_DATA_DIR}
@@ -176,6 +216,11 @@ initialize_datadir() {
   if [[ ${INVOICEPLANE_VERSION} != ${CURRENT_VERSION} ]]; then
     echo -n "${INVOICEPLANE_VERSION}" > ${INVOICEPLANE_DATA_DIR}/VERSION
   fi
+
+  # create backups directory
+  mkdir -p ${INVOICEPLANE_BACKUPS_DIR}
+  chmod -R 0755 ${INVOICEPLANE_BACKUPS_DIR}
+  chown -R ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_BACKUPS_DIR}
 
   chown -R ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_UPLOADS_DIR}
 }
@@ -204,4 +249,15 @@ configure_invoiceplane() {
 configure_nginx() {
   echo "Configuring nginx..."
   nginx_configure_virtualhost
+}
+
+backup_create() {
+  echo -n "Checking database connection"
+  invoiceplane_finalize_database_parameters
+  invoiceplane_check_database_connection
+
+  backup_dump_database
+  backup_dump_directory ${INVOICEPLANE_UPLOADS_DIR} .tar.gz
+  backup_dump_information
+  backup_create_archive backup_information.yml database.sql.gz uploads.tar.gz
 }
