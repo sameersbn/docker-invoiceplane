@@ -1,6 +1,7 @@
 **latest**
 - feature: create backups
 - feature: restore backups
+- feature: backup expiry
 
 **1.4.4**
 - invoiceplane: upgrade to 1.4.4

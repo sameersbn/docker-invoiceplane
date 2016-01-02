@@ -21,6 +21,8 @@ invoicePlane:
 
     - INVOICEPLANE_PHP_FPM_HOST=
     - INVOICEPLANE_PHP_FPM_PORT=
+
+    - INVOICEPLANE_BACKUPS_EXPIRY=0
   links:
     - mysql:mysql
   volumes:

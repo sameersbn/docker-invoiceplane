@@ -230,6 +230,24 @@ backup_create_archive() {
   done
 }
 
+backup_purge_expired() {
+  if [[ ${INVOICEPLANE_BACKUPS_EXPIRY} -gt 0 ]]; then
+    echo -n "Deleting old backups... "
+    local removed=0
+    local now=$(date +%s)
+    local cutoff=$(expr ${now} - ${INVOICEPLANE_BACKUPS_EXPIRY})
+    for backup in $(ls ${INVOICEPLANE_BACKUPS_DIR}/*_invoiceplane_backup.tar)
+    do
+      local timestamp=$(stat -c %Y ${backup})
+      if [[ ${timestamp} -lt ${cutoff} ]]; then
+        rm ${backup}
+        removed=$(expr ${removed} + 1)
+      fi
+    done
+    echo "(${removed} removed)"
+  fi
+}
+
 backup_restore_unpack() {
   local backup=${1}
   echo "Unpacking ${backup}..."
@@ -339,6 +357,7 @@ backup_create() {
   backup_dump_directory ${INVOICEPLANE_UPLOADS_DIR} .tar.gz
   backup_dump_information
   backup_create_archive backup_information.yml database.sql.gz uploads.tar.gz
+  backup_purge_expired
 }
 
 backup_restore() {
