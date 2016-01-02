@@ -11,6 +11,7 @@ fi
 
 echo "Extracting InvoicePlane ${INVOICEPLANE_VERSION}..."
 tar -xf ${INVOICEPLANE_BUILD_DIR}/invoiceplane-${INVOICEPLANE_VERSION}.tar.gz --strip=1 -C ${INVOICEPLANE_INSTALL_DIR}
+mv ${INVOICEPLANE_INSTALL_DIR}/uploads ${INVOICEPLANE_INSTALL_DIR}/uploads.template
 rm -rf ${INVOICEPLANE_BUILD_DIR}/invoiceplane-${INVOICEPLANE_VERSION}.tar.gz
 
 (

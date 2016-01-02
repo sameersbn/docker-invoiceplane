@@ -85,11 +85,10 @@ initialize_datadir() {
   chmod 0755 ${INVOICEPLANE_DATA_DIR}
   chown ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_DATA_DIR}
 
-  # create uploads directory
+  # initialize uploads directory
   if [[ ! -d ${INVOICEPLANE_UPLOADS_DIR} ]]; then
-    cp -a ${INVOICEPLANE_INSTALL_DIR}/uploads ${INVOICEPLANE_UPLOADS_DIR}
+    cp -a ${INVOICEPLANE_INSTALL_DIR}/uploads.template ${INVOICEPLANE_UPLOADS_DIR}
   fi
-  rm -rf ${INVOICEPLANE_INSTALL_DIR}/uploads
   ln -sf ${INVOICEPLANE_UPLOADS_DIR} ${INVOICEPLANE_INSTALL_DIR}/uploads
 
   CURRENT_VERSION=
