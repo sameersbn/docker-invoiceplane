@@ -49,7 +49,7 @@ $active_group = 'default';
 $active_record = TRUE;
 
 $db['default']['hostname'] = '{{DB_HOST}}';
-$db['default']['port'] = {{DB_PORT}};
+$db['default']['port'] = '{{DB_PORT}}';
 $db['default']['username'] = '{{DB_USER}}';
 $db['default']['password'] = '{{DB_PASS}}';
 $db['default']['database'] = '{{DB_NAME}}';
