@@ -22,6 +22,7 @@ COPY assets/build/ ${INVOICEPLANE_BUILD_DIR}/
 RUN bash ${INVOICEPLANE_BUILD_DIR}/install.sh
 
 COPY assets/runtime/ ${INVOICEPLANE_RUNTIME_DIR}/
+COPY assets/tools/ /usr/bin/
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
