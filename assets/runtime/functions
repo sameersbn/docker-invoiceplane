@@ -97,7 +97,7 @@ invoiceplane_get_database_param() {
 invoiceplane_finalize_database_parameters() {
   # is a mysql container linked?
   if [[ -n ${MYSQL_PORT_3306_TCP_ADDR} ]]; then
-    DB_TYPE=${DB_TYPE:-mysql}
+    DB_TYPE=${DB_TYPE:-mysqli}
     DB_HOST=${DB_HOST:-$MYSQL_PORT_3306_TCP_ADDR}
     DB_PORT=${DB_PORT:-$MYSQL_PORT_3306_TCP_PORT}
 
