@@ -103,3 +103,9 @@ initialize_datadir() {
 initialize_system() {
   initialize_datadir
 }
+
+configure_invoiceplane() {
+  echo "Configuring InvoicePlane..."
+  invoiceplane_configure_database
+  invoiceplane_configure_timezone
+}

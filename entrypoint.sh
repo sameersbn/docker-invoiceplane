@@ -13,8 +13,8 @@ fi
 
 initialize_system
 nginx_configure_virtualhost
-invoiceplane_configure_database
-invoiceplane_configure_timezone
+
+configure_invoiceplane
 
 # default behaviour is to launch php5-fpm
 if [[ -z ${1} ]]; then
