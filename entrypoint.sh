@@ -26,7 +26,7 @@ create_data_dir() {
 create_vhost_configuration() {
   # install nginx configuration, if not exists
   if [[ -d /etc/nginx/sites-enabled && ! -f /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf ]]; then
-    cp /var/cache/invoiceplane/conf/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
+    cp ${INVOICE_PLANE_RUNTIME_DIR}/config/nginx/InvoicePlane.conf /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
     sed -i 's,{{INVOICE_PLANE_FQDN}},'"${INVOICE_PLANE_FQDN}"',' /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
     sed -i 's,{{INVOICE_PLANE_INSTALL_DIR}},'"${INVOICE_PLANE_INSTALL_DIR}"',' /etc/nginx/sites-enabled/${INVOICE_PLANE_FQDN}.conf
   fi
@@ -60,7 +60,7 @@ autodetect_database_connection_parameters() {
 }
 
 apply_database_settings() {
-  cp /var/cache/invoiceplane/conf/invoiceplane/database.php ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
+  cp ${INVOICE_PLANE_RUNTIME_DIR}/config/invoiceplane/database.php ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
   sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_HOST}}/'"${DB_HOST}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
   sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_PORT}}/'"${DB_PORT}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
   sudo -HEu ${INVOICE_PLANE_USER} sed -i 's/{{DB_USER}}/'"${DB_USER}"'/' ${INVOICE_PLANE_INSTALL_DIR}/application/config/database.php
@@ -89,7 +89,7 @@ test_database_connection_settings() {
 
 
 configure_timezone() {
-  sudo -HEu ${INVOICE_PLANE_USER} sed -i 's,{{INVOICE_PLANE_TIMEZONE}},'"${INVOICE_PLANE_TIMEZONE}"','  ${INVOICE_PLANE_INSTALL_DIR}/.user.ini
+  sed -i 's,{{INVOICE_PLANE_TIMEZONE}},'"${INVOICE_PLANE_TIMEZONE}"',' ${INVOICE_PLANE_INSTALL_DIR}/.user.ini
 }
 
 update_volume_version() {
