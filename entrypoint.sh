@@ -11,7 +11,7 @@ elif [[ ${1} == php5-fpm || ${1} == $(which php5-fpm) ]]; then
   set --
 fi
 
-initialize_datadir
+initialize_system
 nginx_configure_virtualhost
 invoiceplane_configure_database
 invoiceplane_configure_timezone

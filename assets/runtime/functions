@@ -100,3 +100,7 @@ initialize_datadir() {
 
   chown -R ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_UPLOADS_DIR}
 }
+
+initialize_system() {
+  initialize_datadir
+}
