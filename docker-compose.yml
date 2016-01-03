@@ -17,7 +17,7 @@ invoicePlane:
     - TZ=Asia/Kolkata
 
     - INVOICEPLANE_TIMEZONE=Asia/Kolkata
-    - INVOICEPLANE_FQDN=invoice.example.com
+    - INVOICEPLANE_URL=http://invoice.example.com:10080
 
     - INVOICEPLANE_BACKUPS_EXPIRY=0
   links:

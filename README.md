@@ -67,7 +67,7 @@ The quickest way to start using this image is with [docker-compose](https://docs
 wget https://raw.githubusercontent.com/sameersbn/docker-invoiceplane/master/docker-compose.yml
 ```
 
-Update the `INVOICEPLANE_FQDN` and `INVOICEPLANE_TIMEZONE` environment variables in the `docker-compose.yml` file as required.
+Update the `INVOICEPLANE_URL` environment variable in the `docker-compose.yml` file with the url from which InvoicePlane will be externally accessible.
 
 ```bash
 docker-compose up
