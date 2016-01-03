@@ -11,7 +11,12 @@ INVOICEPLANE_URL=${INVOICEPLANE_URL:-$PHP_FPM_ENV_INVOICEPLANE_URL}
 INVOICEPLANE_URL=${INVOICEPLANE_URL:-http://localhost}
 
 # credits: http://stackoverflow.com/a/2506635/4799938
-INVOICEPLANE_FQDN=$(sed -e "s/[^/]*\/\/\([^@]*@\)\?\([^:/]*\).*/\2/" <<< ${INVOICEPLANE_URL})
+INVOICEPLANE_FQDN=$(sed -e "s/\([^/]*\)\:\/\/\([^@]*@\)\?\([^:/]*\).*/\3/" <<< ${INVOICEPLANE_URL})
+if [[ $(sed -e "s/\([^/]*\)\:\/\/\([^@]*@\)\?\([^:/]*\).*/\1/" <<< ${INVOICEPLANE_URL}) == https ]]; then
+  INVOICEPLANE_HTTPS=${INVOICEPLANE_HTTPS:-on}
+else
+  INVOICEPLANE_HTTPS=${INVOICEPLANE_HTTPS:-off}
+fi
 
 INVOICEPLANE_TIMEZONE=${INVOICE_PLANE_TIMEZONE:-} # backward compatibility
 INVOICEPLANE_TIMEZONE=${INVOICEPLANE_TIMEZONE:-UTC}

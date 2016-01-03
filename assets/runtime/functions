@@ -186,6 +186,7 @@ nginx_configure_virtualhost() {
   invoiceplane_finalize_php_fpm_parameters
   update_template ${INVOICEPLANE_NGINX_CONFIG} \
     INVOICEPLANE_FQDN \
+    INVOICEPLANE_HTTPS \
     INVOICEPLANE_PHP_FPM_HOST \
     INVOICEPLANE_PHP_FPM_PORT
 }
