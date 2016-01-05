@@ -216,7 +216,7 @@ backup_dump_information() {
     echo "  database_adapter: $(invoiceplane_get_database_param dbdriver)"
     echo "  created_at: $(date)"
   ) > ${INVOICEPLANE_BACKUPS_DIR}/backup_information.yml
-  chown ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_BACKUPS_DIR}/backup_information.yml
+  chown ${INVOICEPLANE_USER}: ${INVOICEPLANE_BACKUPS_DIR}/backup_information.yml
 }
 
 backup_create_archive() {
@@ -302,7 +302,7 @@ backup_restore_directory() {
 initialize_datadir() {
   echo "Initializing datadir..."
   chmod 0755 ${INVOICEPLANE_DATA_DIR}
-  chown ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_DATA_DIR}
+  chown ${INVOICEPLANE_USER}: ${INVOICEPLANE_DATA_DIR}
 
   # initialize uploads directory
   if [[ ! -d ${INVOICEPLANE_UPLOADS_DIR} ]]; then
@@ -319,9 +319,9 @@ initialize_datadir() {
   # create backups directory
   mkdir -p ${INVOICEPLANE_BACKUPS_DIR}
   chmod -R 0755 ${INVOICEPLANE_BACKUPS_DIR}
-  chown -R ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_BACKUPS_DIR}
+  chown -R ${INVOICEPLANE_USER}: ${INVOICEPLANE_BACKUPS_DIR}
 
-  chown -R ${INVOICEPLANE_USER}:${INVOICEPLANE_USER} ${INVOICEPLANE_UPLOADS_DIR}
+  chown -R ${INVOICEPLANE_USER}: ${INVOICEPLANE_UPLOADS_DIR}
 }
 
 install_configuration_templates() {
