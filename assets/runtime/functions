@@ -46,19 +46,20 @@ exec_as_invoiceplane() {
 }
 
 ## Copies configuration template in ${INVOICEPLANE_TEMPLATES_DIR} to the destination as the specified USER
-# $1: copy-as user
+# $1: ownership of destination file, uses `chown`
 # $2: source file
 # $3: destination location
-# $4: mode of destination
+# $4: mode of destination, uses `chmod` (default: 0644)
 install_template() {
-  local USR=${1}
+  local OWNERSHIP=${1}
   local SRC=${2}
   local DEST=${3}
   local MODE=${4:-0644}
   if [[ -f ${INVOICEPLANE_TEMPLATES_DIR}/${SRC} ]]; then
-    sudo -HEu ${USR} cp ${INVOICEPLANE_TEMPLATES_DIR}/${SRC} ${DEST}
+    cp ${INVOICEPLANE_TEMPLATES_DIR}/${SRC} ${DEST}
   fi
   chmod ${MODE} ${DEST}
+  chown ${OWNERSHIP} ${DEST}
 }
 
 ## Replace placeholders with values
@@ -325,10 +326,10 @@ initialize_datadir() {
 
 install_configuration_templates() {
   echo "Installing configuration templates..."
-  install_template ${INVOICEPLANE_USER} invoiceplane/database.php ${INVOICEPLANE_DATABASE_CONFIG} 0644
+  install_template ${INVOICEPLANE_USER}: invoiceplane/database.php ${INVOICEPLANE_DATABASE_CONFIG} 0640
 
   if [[ -d /etc/nginx/sites-enabled && ! -f ${INVOICEPLANE_NGINX_CONFIG} ]]; then
-    install_template root nginx/InvoicePlane.conf ${INVOICEPLANE_NGINX_CONFIG} 0644
+    install_template root: nginx/InvoicePlane.conf ${INVOICEPLANE_NGINX_CONFIG} 0644
     update_template ${INVOICEPLANE_NGINX_CONFIG} INVOICEPLANE_INSTALL_DIR
   fi
 }
