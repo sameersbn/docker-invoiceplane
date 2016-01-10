@@ -194,9 +194,10 @@ nginx_configure_virtualhost() {
 
 backup_dump_database() {
   echo "Dumping MySQL database ${DB_NAME}..."
-  exec_as_invoiceplane MYSQL_PWD=${DB_PASS} mysqldump --lock-tables --add-drop-table \
+  MYSQL_PWD=${DB_PASS} mysqldump --lock-tables --add-drop-table \
     --host ${DB_HOST} --port ${DB_PORT} \
     --user ${DB_USER} ${DB_NAME} > ${INVOICEPLANE_BACKUPS_DIR}/database.sql
+  chown ${INVOICEPLANE_USER}: ${INVOICEPLANE_BACKUPS_DIR}/database.sql
   exec_as_invoiceplane gzip -f ${INVOICEPLANE_BACKUPS_DIR}/database.sql
 }
 
