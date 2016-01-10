@@ -309,6 +309,7 @@ initialize_datadir() {
   if [[ ! -d ${INVOICEPLANE_UPLOADS_DIR} ]]; then
     cp -a ${INVOICEPLANE_INSTALL_DIR}/uploads.template ${INVOICEPLANE_UPLOADS_DIR}
   fi
+  rm -rf ${INVOICEPLANE_INSTALL_DIR}/uploads
   ln -sf ${INVOICEPLANE_UPLOADS_DIR} ${INVOICEPLANE_INSTALL_DIR}/uploads
 
   CURRENT_VERSION=
