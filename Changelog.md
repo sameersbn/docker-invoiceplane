@@ -1,4 +1,4 @@
-**latest**
+**1.4.4-1**
 - feature: create backups
 - feature: restore backups
 - feature: backup expiry
