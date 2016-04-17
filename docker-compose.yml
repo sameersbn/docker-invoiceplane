@@ -10,7 +10,7 @@ mysql:
 
 invoicePlane:
   restart: always
-  image: sameersbn/invoiceplane:1.4.6-4
+  image: sameersbn/invoiceplane:1.4.6-5
   command: app:invoiceplane
   environment:
     - DEBUG=false
@@ -25,7 +25,7 @@ invoicePlane:
 
 nginx:
   restart: always
-  image: sameersbn/invoiceplane:1.4.6-4
+  image: sameersbn/invoiceplane:1.4.6-5
   command: app:nginx
   environment:
     - INVOICEPLANE_PHP_FPM_HOST=
