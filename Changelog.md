@@ -1,3 +1,5 @@
+**1.4.10**
+- invoiceplane: security update to 1.4.10
 
 **1.4.9**
 - invoiceplane: upgrade to 1.4.9
