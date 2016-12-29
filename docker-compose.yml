@@ -1,36 +1,45 @@
-mysql:
-  restart: always
-  image: sameersbn/mysql:latest
-  environment:
+version: '2'
+
+services:
+  mysql:
+    restart: always
+    image: sameersbn/mysql:latest
+    environment:
     - DB_USER=invoiceplane
     - DB_PASS=password
     - DB_NAME=invoiceplane_db
-  volumes:
+    volumes:
     - /srv/docker/invoiceplane/mysql:/var/lib/mysql
 
-invoicePlane:
-  restart: always
-  image: sameersbn/invoiceplane:1.4.9
-  command: app:invoiceplane
-  environment:
+  invoiceplane:
+    restart: always
+    image: sameersbn/invoiceplane:1.4.9
+    command: app:invoiceplane
+    environment:
     - DEBUG=false
     - TZ=Asia/Kolkata
 
+    - DB_TYPE=mysqli
+    - DB_HOST=mysql
+    - DB_USER=invoiceplane
+    - DB_PASS=password
+    - DB_NAME=invoiceplane_db
+
     - INVOICEPLANE_URL=http://invoice.example.com:10080
     - INVOICEPLANE_BACKUPS_EXPIRY=0
-  links:
-    - mysql:mysql
-  volumes:
+    depends_on:
+    - mysql
+    volumes:
     - /srv/docker/invoiceplane/invoiceplane:/var/lib/invoiceplane
 
-nginx:
-  restart: always
-  image: sameersbn/invoiceplane:1.4.9
-  command: app:nginx
-  environment:
-    - INVOICEPLANE_PHP_FPM_HOST=
-    - INVOICEPLANE_PHP_FPM_PORT=
-  links:
-    - invoicePlane:php-fpm
-  ports:
+  nginx:
+    restart: always
+    image: sameersbn/invoiceplane:1.4.9
+    command: app:nginx
+    environment:
+    - INVOICEPLANE_PHP_FPM_HOST=invoiceplane
+    - INVOICEPLANE_PHP_FPM_PORT=9000
+    depends_on:
+    - invoiceplane
+    ports:
     - "10080:80"
