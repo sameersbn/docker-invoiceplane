@@ -101,6 +101,7 @@ Step 3. Launch a NGINX frontend container
 ```bash
 docker run --name invoiceplane-nginx -itd --restart=always \
   --link invoiceplane:php-fpm \
+  --volumes-from invoiceplane \
   --publish 10080:80 \
   sameersbn/invoiceplane:1.4.9 app:nginx
 ```

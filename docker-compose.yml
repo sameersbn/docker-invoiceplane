@@ -43,3 +43,5 @@ services:
     - invoiceplane
     ports:
     - "10080:80"
+    volumes_from:
+    - invoiceplane
