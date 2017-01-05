@@ -167,7 +167,7 @@ invoiceplane_finalize_php_fpm_parameters() {
 }
 
 invoiceplane_configure_url() {
-  echo -n "Configuring InvoicePlane::URL"
+  echo "Configuring InvoicePlane::URL"
   sed -i "s|^define('IP_URL', '.*');|define('IP_URL', '"${INVOICEPLANE_URL}"');|" ${INVOICEPLANE_CONFIG}
 }
 
