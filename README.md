@@ -1,6 +1,6 @@
 [![Docker Repository on Quay.io](https://quay.io/repository/sameersbn/invoiceplane/status "Docker Repository on Quay.io")](https://quay.io/repository/sameersbn/invoiceplane)
 
-# sameersbn/invoiceplane:1.4.9
+# sameersbn/invoiceplane:1.4.9-1
 
 - [Introduction](#introduction)
   - [Contributing](#contributing)
@@ -50,7 +50,7 @@ Automated builds of the image are available on [Dockerhub](https://hub.docker.co
 > **Note**: Builds are also available on [Quay.io](https://quay.io/repository/sameersbn/invoiceplane)
 
 ```bash
-docker pull sameersbn/invoiceplane:1.4.9
+docker pull sameersbn/invoiceplane:1.4.9-1
 ```
 
 Alternatively you can build the image yourself.
@@ -93,7 +93,7 @@ docker run --name invoiceplane -itd --restart=always \
   --env 'INVOICEPLANE_FQDN=invoice.example.com' \
   --env 'INVOICEPLANE_TIMEZONE=Asia/Kolkata' \
   --volume /srv/docker/invoiceplane/invoiceplane:/var/lib/invoiceplane \
-  sameersbn/invoiceplane:1.4.9 app:invoiceplane
+  sameersbn/invoiceplane:1.4.9-1 app:invoiceplane
 ```
 
 Step 3. Launch a NGINX frontend container
@@ -103,7 +103,7 @@ docker run --name invoiceplane-nginx -itd --restart=always \
   --link invoiceplane:php-fpm \
   --volumes-from invoiceplane \
   --publish 10080:80 \
-  sameersbn/invoiceplane:1.4.9 app:nginx
+  sameersbn/invoiceplane:1.4.9-1 app:nginx
 ```
 
 Point your browser to [http://invoice.example.com:10080/setup](http://invoice.example.com:10080/setup) to complete the setup.
@@ -137,7 +137,7 @@ Relaunch the container with the `app:backup:create` argument.
 
 ```bash
 docker run --name invoiceplane -it --rm [OPTIONS] \
-  sameersbn/invoiceplane:1.4.9 app:backup:create
+  sameersbn/invoiceplane:1.4.9-1 app:backup:create
 ```
 
 The backup will be created in the `backups/` folder of the [Persistent](#persistence) volume. You can change the location using the `INVOICEPLANE_BACKUPS_DIR` configuration parameter.
@@ -166,7 +166,7 @@ Relaunch the container with the `app:backup:restore` argument. Ensure you launch
 
 ```bash
 docker run --name invoiceplane -it --rm [OPTIONS] \
-  sameersbn/invoiceplane:1.4.9 app:backup:restore
+  sameersbn/invoiceplane:1.4.9-1 app:backup:restore
 ```
 
 A list of existing backups will be displayed. Select a backup you wish to restore.
@@ -175,7 +175,7 @@ To avoid this interaction you can specify the backup filename using the `BACKUP`
 
 ```bash
 docker run --name invoiceplane -it --rm [OPTIONS] \
-  sameersbn/invoiceplane:1.4.9 app:backup:restore BACKUP=1417624827_invoiceplane_backup.tar
+  sameersbn/invoiceplane:1.4.9-1 app:backup:restore BACKUP=1417624827_invoiceplane_backup.tar
 ```
 
 ## Upgrading
@@ -185,7 +185,7 @@ To upgrade to newer releases:
   1. Download the updated Docker image:
 
   ```bash
-  docker pull sameersbn/invoiceplane:1.4.9
+  docker pull sameersbn/invoiceplane:1.4.9-1
   ```
 
   2. Stop the currently running image:
@@ -205,7 +205,7 @@ To upgrade to newer releases:
   ```bash
   docker run -name invoiceplane -itd \
     [OPTIONS] \
-    sameersbn/invoiceplane:1.4.9
+    sameersbn/invoiceplane:1.4.9-1
   ```
 
 Point your browser to [http://invoice.example.com:10080/setup](http://invoice.example.com:10080/setup) to complete the upgrade.
