@@ -14,6 +14,10 @@ tar -xf ${INVOICEPLANE_BUILD_DIR}/invoiceplane-${INVOICEPLANE_VERSION}.tar.gz --
 mv ${INVOICEPLANE_INSTALL_DIR}/uploads ${INVOICEPLANE_INSTALL_DIR}/uploads.template
 rm -rf ${INVOICEPLANE_BUILD_DIR}/invoiceplane-${INVOICEPLANE_VERSION}.tar.gz
 
+echo "Installing composer dependencies..."
+cd ${INVOICEPLANE_INSTALL_DIR}
+composer install --prefer-source --no-interaction --no-dev -o
+
 (
   echo "default_charset = 'UTF-8'"
   echo "output_buffering = off"
