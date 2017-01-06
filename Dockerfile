@@ -1,7 +1,8 @@
 FROM sameersbn/ubuntu:14.04.20161217
 MAINTAINER sameer@damagehead.com
 
-ENV INVOICEPLANE_VERSION=1.4.10 \
+ENV PHP_VERSION=5.6 \
+    INVOICEPLANE_VERSION=1.4.10 \
     INVOICEPLANE_USER=www-data \
     INVOICEPLANE_INSTALL_DIR=/var/www/invoiceplane \
     INVOICEPLANE_DATA_DIR=/var/lib/invoiceplane \
@@ -16,10 +17,12 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756
  && echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu trusty main" >> /etc/apt/sources.list \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-      php5-fpm php5-cli php5-gd php5-mysql php5-mcrypt \
+      php${PHP_VERSION}-fpm php${PHP_VERSION}-cli php${PHP_VERSION}-mysql \
+      php${PHP_VERSION}-gd php${PHP_VERSION}-json php${PHP_VERSION}-mbstring \
+      php${PHP_VERSION}-mcrypt php${PHP_VERSION}-recode php${PHP_VERSION}-xmlrpc \
       mysql-client nginx gettext-base git \
- && sed -i 's/^listen = .*/listen = 0.0.0.0:9000/' /etc/php5/fpm/pool.d/www.conf \
- && php5enmod mcrypt \
+ && sed -i 's/^listen = .*/listen = 0.0.0.0:9000/' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf \
+ && phpenmod -v ALL mcrypt \
  && wget "https://getcomposer.org/composer.phar" -O /usr/local/bin/composer \
  && chmod +x /usr/local/bin/composer \
  && rm -rf /var/lib/apt/lists/*

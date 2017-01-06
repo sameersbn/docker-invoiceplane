@@ -24,6 +24,8 @@ composer install --prefer-source --no-interaction --no-dev -o
   echo "date.timezone = {{INVOICEPLANE_TIMEZONE}}"
 ) > ${INVOICEPLANE_INSTALL_DIR}/.user.ini
 
+mkdir -p /run/php/
+
 # remove default nginx virtualhost
 rm -rf /etc/nginx/sites-enabled/default
 
