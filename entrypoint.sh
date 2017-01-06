@@ -13,7 +13,7 @@ case ${1} in
       app:invoiceplane)
         configure_invoiceplane
         echo "Starting InvoicePlane php5-fpm..."
-        exec $(which php5-fpm)
+        exec $(which php-fpm${PHP_VERSION}) -F
         ;;
       app:nginx)
         configure_nginx

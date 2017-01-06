@@ -3,16 +3,16 @@ set -e
 
 mkdir -p ${INVOICEPLANE_INSTALL_DIR}
 
-if [[ ! -f ${INVOICEPLANE_BUILD_DIR}/invoiceplane-${INVOICEPLANE_VERSION}.tar.gz ]]; then
+if [[ ! -f ${INVOICEPLANE_BUILD_DIR}/InvoicePlane-${INVOICEPLANE_VERSION}.tar.gz ]]; then
   echo "Downloading InvoicePlane ${INVOICEPLANE_VERSION}..."
   wget "https://github.com/InvoicePlane/InvoicePlane/archive/v${INVOICEPLANE_VERSION}.tar.gz" \
-    -O ${INVOICEPLANE_BUILD_DIR}/invoiceplane-${INVOICEPLANE_VERSION}.tar.gz
+    -O ${INVOICEPLANE_BUILD_DIR}/InvoicePlane-${INVOICEPLANE_VERSION}.tar.gz
 fi
 
 echo "Extracting InvoicePlane ${INVOICEPLANE_VERSION}..."
-tar -xf ${INVOICEPLANE_BUILD_DIR}/invoiceplane-${INVOICEPLANE_VERSION}.tar.gz --strip=1 -C ${INVOICEPLANE_INSTALL_DIR}
+tar -xf ${INVOICEPLANE_BUILD_DIR}/InvoicePlane-${INVOICEPLANE_VERSION}.tar.gz --strip=1 -C ${INVOICEPLANE_INSTALL_DIR}
 mv ${INVOICEPLANE_INSTALL_DIR}/uploads ${INVOICEPLANE_INSTALL_DIR}/uploads.template
-rm -rf ${INVOICEPLANE_BUILD_DIR}/invoiceplane-${INVOICEPLANE_VERSION}.tar.gz
+rm -rf ${INVOICEPLANE_BUILD_DIR}/InvoicePlane-${INVOICEPLANE_VERSION}.tar.gz
 
 echo "Installing composer dependencies..."
 cd ${INVOICEPLANE_INSTALL_DIR}
@@ -23,6 +23,8 @@ composer install --prefer-source --no-interaction --no-dev -o
   echo "output_buffering = off"
   echo "date.timezone = {{INVOICEPLANE_TIMEZONE}}"
 ) > ${INVOICEPLANE_INSTALL_DIR}/.user.ini
+
+mkdir -p /run/php/
 
 # remove default nginx virtualhost
 rm -rf /etc/nginx/sites-enabled/default
