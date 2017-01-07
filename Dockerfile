@@ -1,7 +1,7 @@
 FROM sameersbn/ubuntu:14.04.20161217
 MAINTAINER sameer@damagehead.com
 
-ENV PHP_VERSION=5.6 \
+ENV PHP_VERSION=7.0 \
     INVOICEPLANE_VERSION=1.4.10 \
     INVOICEPLANE_USER=www-data \
     INVOICEPLANE_INSTALL_DIR=/var/www/invoiceplane \
