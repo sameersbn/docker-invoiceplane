@@ -23,7 +23,7 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756
       mysql-client nginx gettext-base git \
  && sed -i 's/^listen = .*/listen = 0.0.0.0:9000/' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf \
  && phpenmod -v ALL mcrypt \
- && wget "https://getcomposer.org/composer.phar" -O /usr/local/bin/composer \
+ && wget -nv "https://getcomposer.org/composer.phar" -O /usr/local/bin/composer \
  && chmod +x /usr/local/bin/composer \
  && rm -rf /var/lib/apt/lists/*
 

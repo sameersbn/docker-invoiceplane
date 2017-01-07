@@ -5,7 +5,7 @@ mkdir -p ${INVOICEPLANE_INSTALL_DIR}
 
 if [[ ! -f ${INVOICEPLANE_BUILD_DIR}/InvoicePlane-${INVOICEPLANE_VERSION}.tar.gz ]]; then
   echo "Downloading InvoicePlane ${INVOICEPLANE_VERSION}..."
-  wget "https://github.com/InvoicePlane/InvoicePlane/archive/v${INVOICEPLANE_VERSION}.tar.gz" \
+  wget -nv "https://github.com/InvoicePlane/InvoicePlane/archive/v${INVOICEPLANE_VERSION}.tar.gz" \
     -O ${INVOICEPLANE_BUILD_DIR}/InvoicePlane-${INVOICEPLANE_VERSION}.tar.gz
 fi
 
