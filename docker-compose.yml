@@ -25,7 +25,7 @@ services:
     - DB_PASS=password
     - DB_NAME=invoiceplane_db
 
-    - INVOICEPLANE_URL=http://invoice.example.com:10080
+    - INVOICEPLANE_URL=http://localhost:10080
     - INVOICEPLANE_BACKUPS_EXPIRY=0
     depends_on:
     - mysql
