@@ -18,6 +18,11 @@ echo "Installing composer dependencies..."
 cd ${INVOICEPLANE_INSTALL_DIR}
 composer install --prefer-source --no-interaction --no-dev -o
 
+echo "Building assets..."
+npm install
+npm install -g grunt-cli
+grunt build
+
 (
   echo "default_charset = 'UTF-8'"
   echo "output_buffering = off"
@@ -30,6 +35,7 @@ mkdir -p /run/php/
 rm -rf /etc/nginx/sites-enabled/default
 
 # set directory permissions
+cp ${INVOICEPLANE_INSTALL_DIR}/ipconfig.php.example ${INVOICEPLANE_INSTALL_DIR}/ipconfig.php
 find ${INVOICEPLANE_INSTALL_DIR}/ -type f -print0 | xargs -0 chmod 0640
 find ${INVOICEPLANE_INSTALL_DIR}/ -type d -print0 | xargs -0 chmod 0750
 chown -R root:${INVOICEPLANE_USER} ${INVOICEPLANE_INSTALL_DIR}/
@@ -37,3 +43,4 @@ chown -R ${INVOICEPLANE_USER}: ${INVOICEPLANE_INSTALL_DIR}/application/config/
 chown -R ${INVOICEPLANE_USER}: ${INVOICEPLANE_INSTALL_DIR}/application/logs/
 chown root:${INVOICEPLANE_USER} ${INVOICEPLANE_INSTALL_DIR}/.user.ini
 chmod 0644 ${INVOICEPLANE_INSTALL_DIR}/.user.ini
+chmod 0660 ${INVOICEPLANE_INSTALL_DIR}/ipconfig.php
