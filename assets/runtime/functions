@@ -3,7 +3,7 @@ set -e
 source ${INVOICEPLANE_RUNTIME_DIR}/env-defaults
 
 INVOICEPLANE_TEMPLATES_DIR=${INVOICEPLANE_RUNTIME_DIR}/config
-INVOICEPLANE_CONFIG=${INVOICEPLANE_INSTALL_DIR}/ipconfig.php
+INVOICEPLANE_CONFIG=${INVOICEPLANE_DATA_DIR}/ipconfig.php
 INVOICEPLANE_DATABASE_CONFIG=${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
 INVOICEPLANE_NGINX_CONFIG=/etc/nginx/sites-enabled/InvoicePlane.conf
 
@@ -91,6 +91,28 @@ update_template() {
   rm -f ${tmp_file}
 }
 
+invoiceplane_get_param() {
+  local key=${1?missing argument}
+  exec_as_invoiceplane sed -n -e "s/^\([ ]*\)\(${key}[ ]*=[ ]*\)\([^ ]*\)\(.*\)$/\3/p" ${INVOICEPLANE_CONFIG}
+}
+
+invoiceplane_set_param() {
+  local key=${1?missing argument}
+  local value=${2?missing argument}
+  local hide=${3}
+  if [[ -n ${value} ]]; then
+    local current=$(invoiceplane_get_param ${key})
+    if [[ "${current}" != "${value}" ]]; then
+      case ${hide} in
+        true)  echo "‣ Setting ipconfig.php parameter: ${key}" ;;
+        *) echo "‣ Setting ipconfig.php parameter: ${key} = '${value}'" ;;
+      esac
+      value="$(echo "${value}" | sed 's|[&]|\\&|g')"
+      exec_as_invoiceplane sed -i "s|^${key}=.*|${key}=${value}|" ${INVOICEPLANE_CONFIG}
+    fi
+  fi
+}
+
 invoiceplane_finalize_database_parameters() {
   # is a mysql container linked?
   if [[ -n ${MYSQL_PORT_3306_TCP_ADDR} ]]; then
@@ -163,19 +185,18 @@ invoiceplane_finalize_php_fpm_parameters() {
 
 invoiceplane_configure_url() {
   echo "Configuring InvoicePlane::URL"
-  update_template ${INVOICEPLANE_CONFIG} INVOICEPLANE_URL
+  invoiceplane_set_param "IP_URL" "${INVOICEPLANE_URL}"
 }
 
 invoiceplane_configure_database() {
   echo -n "Configuring InvoicePlane::database"
   invoiceplane_finalize_database_parameters
   invoiceplane_check_database_connection
-  update_template ${INVOICEPLANE_CONFIG} \
-    DB_HOST \
-    DB_PORT \
-    DB_USER \
-    DB_PASS \
-    DB_NAME
+  invoiceplane_set_param "DB_HOSTNAME" "${DB_HOST}"
+  invoiceplane_set_param "DB_PORT" "${DB_PORT}"
+  invoiceplane_set_param "DB_USERNAME" "${DB_USER}"
+  invoiceplane_set_param "DB_PASSWORD" "${DB_PASS}" "true"
+  invoiceplane_set_param "DB_DATABASE" "${DB_NAME}"
 }
 
 invoiceplane_configure_timezone() {
@@ -334,7 +355,10 @@ initialize_datadir() {
 
 install_configuration_templates() {
   echo "Installing configuration templates..."
-  install_template ${INVOICEPLANE_USER}: invoiceplane/ipconfig.php ${INVOICEPLANE_CONFIG} 0640
+  if [[ ! -f ${INVOICEPLANE_CONFIG} ]]; then
+    install_template ${INVOICEPLANE_USER}: invoiceplane/ipconfig.php ${INVOICEPLANE_CONFIG} 0640
+  fi
+  ln -sf ${INVOICEPLANE_CONFIG} ${INVOICEPLANE_INSTALL_DIR}/ipconfig.php
 
   if [[ -d /etc/nginx/sites-enabled && ! -f ${INVOICEPLANE_NGINX_CONFIG} ]]; then
     install_template root: nginx/InvoicePlane.conf ${INVOICEPLANE_NGINX_CONFIG} 0644

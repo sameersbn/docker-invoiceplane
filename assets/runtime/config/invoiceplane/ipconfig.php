@@ -4,7 +4,7 @@
 # Set your URL without trailing slash here, e.g. http://your-domain.com
 # If you use a subdomain, use http://subdomain.your-domain.com
 # If you use a subfolder, use http://your-domain.com/subfolder
-IP_URL={{INVOICEPLANE_URL}}
+IP_URL=
 
 # Having problems? Enable debug by changing the value to 'true' to enable advanced logging
 ENABLE_DEBUG=false
@@ -17,11 +17,11 @@ DISABLE_SETUP=false
 REMOVE_INDEXPHP=false
 
 # These database settings are set during the initial setup
-DB_HOSTNAME={{DB_HOST}}
-DB_USERNAME={{DB_USER}}
-DB_PASSWORD={{DB_PASS}}
-DB_DATABASE={{DB_NAME}}
-DB_PORT={{DB_PORT}}
+DB_HOSTNAME=
+DB_USERNAME=
+DB_PASSWORD=
+DB_DATABASE=
+DB_PORT=
 
 # If you want to be logged out after closing your browser window, set this setting to 0 (ZERO).
 # The number represents the amount of minutes after that IP will automatically log out users,
