@@ -91,11 +91,6 @@ update_template() {
   rm -f ${tmp_file}
 }
 
-invoiceplane_get_database_param() {
-  local key=${1?missing argument}
-  exec_as_invoiceplane sed -n -e "s/\([ ]*\)\('dbdriver' => '\)\([^ ']*\)\(.*\)$/\3/p" ${INVOICEPLANE_DATABASE_CONFIG}
-}
-
 invoiceplane_finalize_database_parameters() {
   # is a mysql container linked?
   if [[ -n ${MYSQL_PORT_3306_TCP_ADDR} ]]; then
@@ -219,7 +214,7 @@ backup_dump_information() {
   (
     echo "info:"
     echo "  invoiceplane_version: ${INVOICEPLANE_VERSION}"
-    echo "  database_adapter: $(invoiceplane_get_database_param dbdriver)"
+    echo "  database_adapter: mysqli"
     echo "  created_at: $(date)"
   ) > ${INVOICEPLANE_BACKUPS_DIR}/backup_information.yml
   chown ${INVOICEPLANE_USER}: ${INVOICEPLANE_BACKUPS_DIR}/backup_information.yml
