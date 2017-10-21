@@ -1,3 +1,6 @@
+**latest**
+- invoiceplane: upgrade to 1.5.4
+
 **1.5.3**
 - invoiceplane: upgrade to 1.5.3
 
