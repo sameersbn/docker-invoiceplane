@@ -183,6 +183,14 @@ invoiceplane_finalize_php_fpm_parameters() {
   INVOICEPLANE_PHP_FPM_PORT=${INVOICEPLANE_PHP_FPM_PORT:-9000}
 }
 
+invoiceplane_configure_debugging() {
+  echo "Configuring InvoicePlane::Debugging"
+  case $DEBUG in
+    true) invoiceplane_set_param "ENABLE_DEBUG" "true" ;;
+    *) invoiceplane_set_param "ENABLE_DEBUG" "false" ;;
+  esac
+}
+
 invoiceplane_configure_url() {
   echo "Configuring InvoicePlane::URL"
   invoiceplane_set_param "IP_URL" "${INVOICEPLANE_URL}"
@@ -373,6 +381,7 @@ initialize_system() {
 
 configure_invoiceplane() {
   echo "Configuring InvoicePlane..."
+  invoiceplane_configure_debugging
   invoiceplane_configure_url
   invoiceplane_configure_database
   invoiceplane_configure_timezone
