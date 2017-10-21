@@ -12,8 +12,8 @@ case ${1} in
     case ${1} in
       app:invoiceplane)
         configure_invoiceplane
-        echo "Starting InvoicePlane php"${PHP_VERSION}"-fpm..." 
-        exec $(which php-fpm${PHP_VERSION}) -F		
+        echo "Starting InvoicePlane php"${PHP_VERSION}"-fpm..."
+        exec $(which php-fpm${PHP_VERSION}) -F
         ;;
       app:nginx)
         configure_nginx
