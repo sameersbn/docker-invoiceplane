@@ -35,3 +35,4 @@ chown -R ${INVOICEPLANE_USER}: ${INVOICEPLANE_INSTALL_DIR}/application/logs/
 chown root:${INVOICEPLANE_USER} ${INVOICEPLANE_INSTALL_DIR}/.user.ini
 chmod 0644 ${INVOICEPLANE_INSTALL_DIR}/.user.ini
 chmod 0660 ${INVOICEPLANE_INSTALL_DIR}/ipconfig.php
+chmod 1777 ${INVOICEPLANE_INSTALL_DIR}/vendor/mpdf/mpdf/tmp/
