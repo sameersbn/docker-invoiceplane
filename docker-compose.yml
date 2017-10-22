@@ -26,6 +26,7 @@ services:
     - DB_NAME=invoiceplane_db
 
     - INVOICEPLANE_URL=http://localhost:10080
+    - INVOICEPLANE_PROXY_IPS=
     - INVOICEPLANE_BACKUPS_EXPIRY=0
     depends_on:
     - mysql

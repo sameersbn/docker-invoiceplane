@@ -1,6 +1,6 @@
 **1.5.4**
 - invoiceplane: upgrade to 1.5.4
-- add `PROXY_IPS` to configure reverse proxy ips
+- add `INVOICEPLANE_PROXY_IPS` to configure reverse proxy ips
 
 **1.5.3**
 - invoiceplane: upgrade to 1.5.3

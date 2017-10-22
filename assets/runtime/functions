@@ -199,7 +199,7 @@ invoiceplane_configure_url() {
 
 invoiceplane_configure_proxy_ips() {
   echo "Configuring InvoicePlane::Proxy IPS"
-  sed -i "s|config\['proxy_ips'\] = '';|config['proxy_ips'] = '"${PROXY_IPS}"';|" ${INVOICEPLANE_CODEIGNITER_CONFIG}
+  sed -i "s|^\$config\['proxy_ips'\][ ]*=.*;|\$config\['proxy_ips'\] = '"$INVOICEPLANE_PROXY_IPS"';|" ${INVOICEPLANE_CODEIGNITER_CONFIG}
 }
 
 invoiceplane_configure_database() {
