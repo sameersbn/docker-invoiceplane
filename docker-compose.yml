@@ -13,7 +13,7 @@ services:
 
   invoiceplane:
     restart: always
-    image: sameersbn/invoiceplane:1.4.10-2
+    image: sameersbn/invoiceplane:1.5.4
     command: app:invoiceplane
     environment:
     - DEBUG=false
@@ -25,7 +25,8 @@ services:
     - DB_PASS=password
     - DB_NAME=invoiceplane_db
 
-    - INVOICEPLANE_URL=http://invoice.example.com:10080
+    - INVOICEPLANE_URL=http://localhost:10080
+    - INVOICEPLANE_PROXY_IPS=
     - INVOICEPLANE_BACKUPS_EXPIRY=0
     depends_on:
     - mysql
@@ -34,7 +35,7 @@ services:
 
   nginx:
     restart: always
-    image: sameersbn/invoiceplane:1.4.10-2
+    image: sameersbn/invoiceplane:1.5.4
     command: app:nginx
     environment:
     - INVOICEPLANE_PHP_FPM_HOST=invoiceplane

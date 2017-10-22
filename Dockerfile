@@ -1,8 +1,8 @@
-FROM sameersbn/ubuntu:14.04.20170123
+FROM sameersbn/ubuntu:14.04.20170724
 MAINTAINER sameer@damagehead.com
 
-ENV PHP_VERSION=7.0 \
-    INVOICEPLANE_VERSION=1.4.10 \
+ENV PHP_VERSION=7.1 \
+    INVOICEPLANE_VERSION=1.5.4 \
     INVOICEPLANE_USER=www-data \
     INVOICEPLANE_INSTALL_DIR=/var/www/invoiceplane \
     INVOICEPLANE_DATA_DIR=/var/lib/invoiceplane \
@@ -23,8 +23,6 @@ RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756
       mysql-client nginx gettext-base git \
  && sed -i 's/^listen = .*/listen = 0.0.0.0:9000/' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf \
  && phpenmod -v ALL mcrypt \
- && wget -nv "https://getcomposer.org/composer.phar" -O /usr/local/bin/composer \
- && chmod +x /usr/local/bin/composer \
  && rm -rf /var/lib/apt/lists/*
 
 COPY assets/build/ ${INVOICEPLANE_BUILD_DIR}/
@@ -40,4 +38,4 @@ WORKDIR ${INVOICEPLANE_INSTALL_DIR}
 ENTRYPOINT ["/sbin/entrypoint.sh"]
 CMD ["app:invoiceplane"]
 
-EXPOSE 9000
+EXPOSE 80/tcp 9000/tcp
