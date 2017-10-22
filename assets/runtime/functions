@@ -3,9 +3,8 @@ set -e
 source ${INVOICEPLANE_RUNTIME_DIR}/env-defaults
 
 INVOICEPLANE_TEMPLATES_DIR=${INVOICEPLANE_RUNTIME_DIR}/config
-INVOICEPLANE_CONFIG=${INVOICEPLANE_DATA_DIR}/ipconfig.php
+INVOICEPLANE_CONFIG=${INVOICEPLANE_CONFIGS_DIR}/ipconfig.php
 INVOICEPLANE_CODEIGNITER_CONFIG=${INVOICEPLANE_INSTALL_DIR}/application/config/config.php
-INVOICEPLANE_DATABASE_CONFIG=${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
 INVOICEPLANE_NGINX_CONFIG=/etc/nginx/sites-enabled/InvoicePlane.conf
 
 # Compares two version strings `a` and `b`
@@ -340,6 +339,10 @@ initialize_datadir() {
   chmod 0755 ${INVOICEPLANE_DATA_DIR}
   chown ${INVOICEPLANE_USER}: ${INVOICEPLANE_DATA_DIR}
 
+  # initialize configs directory
+  mkdir -p ${INVOICEPLANE_CONFIGS_DIR}
+  chmod 0755 ${INVOICEPLANE_CONFIGS_DIR}
+
   # initialize uploads directory
   if [[ ! -d ${INVOICEPLANE_UPLOADS_DIR} ]]; then
     cp -a ${INVOICEPLANE_INSTALL_DIR}/uploads.template ${INVOICEPLANE_UPLOADS_DIR}
@@ -370,7 +373,12 @@ initialize_datadir() {
 install_configuration_templates() {
   echo "Installing configuration templates..."
   if [[ ! -f ${INVOICEPLANE_CONFIG} ]]; then
-    install_template ${INVOICEPLANE_USER}: invoiceplane/ipconfig.php ${INVOICEPLANE_CONFIG} 0640
+    if [[ -f ${INVOICEPLANE_DATA_DIR}/ipconfig.php ]]; then
+      # backward compatibility == 1.5.4
+      mv ${INVOICEPLANE_DATA_DIR}/ipconfig.php ${INVOICEPLANE_CONFIG}
+    else
+      install_template ${INVOICEPLANE_USER}: invoiceplane/ipconfig.php ${INVOICEPLANE_CONFIG} 0640
+    fi
   fi
   ln -sf ${INVOICEPLANE_CONFIG} ${INVOICEPLANE_INSTALL_DIR}/ipconfig.php
 
