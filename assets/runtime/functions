@@ -413,9 +413,10 @@ backup_create() {
   invoiceplane_check_database_connection
 
   backup_dump_database
+  backup_dump_directory ${INVOICEPLANE_CONFIGS_DIR} .tar.gz
   backup_dump_directory ${INVOICEPLANE_UPLOADS_DIR} .tar.gz
   backup_dump_information
-  backup_create_archive backup_information.yml database.sql.gz uploads.tar.gz
+  backup_create_archive backup_information.yml database.sql.gz configs.tar.gz uploads.tar.gz
   backup_purge_expired
 }
 
@@ -466,5 +467,6 @@ backup_restore() {
   backup_restore_unpack ${tar_file}
   backup_restore_validate
   backup_restore_database
+  backup_restore_directory ${INVOICEPLANE_CONFIGS_DIR} .tar.gz
   backup_restore_directory ${INVOICEPLANE_UPLOADS_DIR} .tar.gz
 }
