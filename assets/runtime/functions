@@ -4,6 +4,7 @@ source ${INVOICEPLANE_RUNTIME_DIR}/env-defaults
 
 INVOICEPLANE_TEMPLATES_DIR=${INVOICEPLANE_RUNTIME_DIR}/config
 INVOICEPLANE_CONFIG=${INVOICEPLANE_DATA_DIR}/ipconfig.php
+INVOICEPLANE_CODEIGNITER_CONFIG=${INVOICEPLANE_INSTALL_DIR}/application/config/config.php
 INVOICEPLANE_DATABASE_CONFIG=${INVOICEPLANE_INSTALL_DIR}/application/config/database.php
 INVOICEPLANE_NGINX_CONFIG=/etc/nginx/sites-enabled/InvoicePlane.conf
 
@@ -196,6 +197,11 @@ invoiceplane_configure_url() {
   invoiceplane_set_param "IP_URL" "${INVOICEPLANE_URL}"
 }
 
+invoiceplane_configure_proxy_ips() {
+  echo "Configuring InvoicePlane::Proxy IPS"
+  sed -i "s|config\['proxy_ips'\] = '';|config['proxy_ips'] = '"${PROXY_IPS}"';|" ${INVOICEPLANE_CODEIGNITER_CONFIG}
+}
+
 invoiceplane_configure_database() {
   echo -n "Configuring InvoicePlane::database"
   invoiceplane_finalize_database_parameters
@@ -383,6 +389,7 @@ configure_invoiceplane() {
   echo "Configuring InvoicePlane..."
   invoiceplane_configure_debugging
   invoiceplane_configure_url
+  invoiceplane_configure_proxy_ips
   invoiceplane_configure_database
   invoiceplane_configure_timezone
 }
