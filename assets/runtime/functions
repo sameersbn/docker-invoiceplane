@@ -342,6 +342,7 @@ initialize_datadir() {
   # initialize configs directory
   mkdir -p ${INVOICEPLANE_CONFIGS_DIR}
   chmod 0755 ${INVOICEPLANE_CONFIGS_DIR}
+  chown -R ${INVOICEPLANE_USER}: ${INVOICEPLANE_CONFIGS_DIR}
 
   # initialize uploads directory
   if [[ ! -d ${INVOICEPLANE_UPLOADS_DIR} ]]; then
