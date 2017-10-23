@@ -1,3 +1,6 @@
+**1.5.4-2**
+- fix ownership of configs directory
+
 **1.5.4**
 - invoiceplane: upgrade to 1.5.4
 - add `INVOICEPLANE_PROXY_IPS` to configure reverse proxy ips
