@@ -1,4 +1,4 @@
-**latest**
+**1.5.5**
 - invoiceplane: upgrade to 1.5.5
 
 **1.5.4-2**
