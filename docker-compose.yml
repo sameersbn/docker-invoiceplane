@@ -13,7 +13,7 @@ services:
 
   invoiceplane:
     restart: always
-    image: sameersbn/invoiceplane:1.5.5
+    image: sameersbn/invoiceplane:1.5.5-1
     command: app:invoiceplane
     environment:
     - DEBUG=false
@@ -35,7 +35,7 @@ services:
 
   nginx:
     restart: always
-    image: sameersbn/invoiceplane:1.5.5
+    image: sameersbn/invoiceplane:1.5.5-1
     command: app:nginx
     environment:
     - INVOICEPLANE_PHP_FPM_HOST=invoiceplane

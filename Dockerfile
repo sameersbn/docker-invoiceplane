@@ -1,7 +1,7 @@
-FROM sameersbn/ubuntu:14.04.20171024
+FROM sameersbn/ubuntu:16.04.20180124
 MAINTAINER sameer@damagehead.com
 
-ENV PHP_VERSION=7.1 \
+ENV PHP_VERSION=7.0 \
     INVOICEPLANE_VERSION=1.5.5 \
     INVOICEPLANE_USER=www-data \
     INVOICEPLANE_INSTALL_DIR=/var/www/invoiceplane \
@@ -11,9 +11,7 @@ ENV PHP_VERSION=7.1 \
 ENV INVOICEPLANE_BUILD_DIR=${INVOICEPLANE_CACHE_DIR}/build \
     INVOICEPLANE_RUNTIME_DIR=${INVOICEPLANE_CACHE_DIR}/runtime
 
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 14AA40EC0831756756D7F66C4F4EA0AAE5267A6C \
- && echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu trusty main" >> /etc/apt/sources.list \
- && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F782CC4951600A6F0A3C300EE8C \
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 8B3981E7A6852F782CC4951600A6F0A3C300EE8C \
  && echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu trusty main" >> /etc/apt/sources.list \
  && apt-get update \
  && DEBIAN_FRONTEND=noninteractive apt-get install -y \
