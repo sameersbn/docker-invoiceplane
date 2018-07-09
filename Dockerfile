@@ -1,4 +1,4 @@
-FROM sameersbn/ubuntu:16.04.20180124
+FROM sameersbn/ubuntu:16.04.20180706
 MAINTAINER sameer@damagehead.com
 
 ENV PHP_VERSION=7.0 \
