@@ -21,15 +21,21 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 COPY assets/build/ ${INVOICEPLANE_BUILD_DIR}/
+
 RUN bash ${INVOICEPLANE_BUILD_DIR}/install.sh
 
 COPY assets/runtime/ ${INVOICEPLANE_RUNTIME_DIR}/
+
 COPY assets/tools/ /usr/bin/
+
 COPY entrypoint.sh /sbin/entrypoint.sh
+
 RUN chmod 755 /sbin/entrypoint.sh
 
 WORKDIR ${INVOICEPLANE_INSTALL_DIR}
+
 ENTRYPOINT ["/sbin/entrypoint.sh"]
+
 CMD ["app:invoiceplane"]
 
 EXPOSE 80/tcp 9000/tcp
