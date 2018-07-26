@@ -361,6 +361,7 @@ initialize_datadir() {
 
   # initialize invoice template directory
   if [[ ! -d ${INVOICEPLANE_DOCUMENT_TEMPLATES} ]]; then
+    mkdir -p ${INVOICEPLANE_DOCUMENT_TEMPLATES}
     cp -a ${INVOICEPLANE_INSTALL_DIR}/application/views/invoice_templates.template ${INVOICEPLANE_DOCUMENT_TEMPLATES}/invoice_templates
     cp -a ${INVOICEPLANE_INSTALL_DIR}/application/views/quote_templates.template ${INVOICEPLANE_DOCUMENT_TEMPLATES}/quote_templates
   fi
