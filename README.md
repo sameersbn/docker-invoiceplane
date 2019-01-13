@@ -82,7 +82,7 @@ docker run --name invoiceplane-mysql -itd --restart=always \
   --env 'DB_NAME=invoiceplane_db' \
   --env 'DB_USER=invoiceplane' --env 'DB_PASS=password' \
   --volume /srv/docker/invoiceplane/mysql:/var/lib/mysql \
-  sameersbn/mysql:5.7.22-1
+  sameersbn/mysql:5.7.24
 ```
 
 Step 2. Launch the InvoicePlane php-fpm container

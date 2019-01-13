@@ -3,7 +3,7 @@ version: '2'
 services:
   mysql:
     restart: always
-    image: sameersbn/mysql:5.7.22-1
+    image: sameersbn/mysql:5.7.24
     environment:
     - DB_USER=invoiceplane
     - DB_PASS=password
