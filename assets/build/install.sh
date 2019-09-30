@@ -12,6 +12,9 @@ unzip ${INVOICEPLANE_BUILD_DIR}/v${INVOICEPLANE_VERSION}.zip
 mv ip ${INVOICEPLANE_INSTALL_DIR}
 
 mv ${INVOICEPLANE_INSTALL_DIR}/uploads ${INVOICEPLANE_INSTALL_DIR}/uploads.template
+mv ${INVOICEPLANE_INSTALL_DIR}/application/views/invoice_templates ${INVOICEPLANE_INSTALL_DIR}/application/views/invoice_templates.template
+mv ${INVOICEPLANE_INSTALL_DIR}/application/views/quote_templates ${INVOICEPLANE_INSTALL_DIR}/application/views/quote_templates.template
+
 rm -rf ${INVOICEPLANE_BUILD_DIR}/InvoicePlane-${INVOICEPLANE_VERSION}.tar.gz
 
 (

@@ -359,6 +359,19 @@ initialize_datadir() {
 
   chown -R ${INVOICEPLANE_USER}: ${INVOICEPLANE_UPLOADS_DIR}
 
+  # initialize invoice template directory
+  if [[ ! -d ${INVOICEPLANE_DOCUMENT_TEMPLATES} ]]; then
+    mkdir -p ${INVOICEPLANE_DOCUMENT_TEMPLATES}
+    cp -a ${INVOICEPLANE_INSTALL_DIR}/application/views/invoice_templates.template ${INVOICEPLANE_DOCUMENT_TEMPLATES}/invoice_templates
+    cp -a ${INVOICEPLANE_INSTALL_DIR}/application/views/quote_templates.template ${INVOICEPLANE_DOCUMENT_TEMPLATES}/quote_templates
+  fi
+  rm -rf ${INVOICEPLANE_INSTALL_DIR}/application/views/invoice_templates ${INVOICEPLANE_INSTALL_DIR}/application/views/quote_templates
+  ln -sf ${INVOICEPLANE_DOCUMENT_TEMPLATES}/invoice_templates ${INVOICEPLANE_INSTALL_DIR}/application/views/invoice_templates
+  ln -sf ${INVOICEPLANE_DOCUMENT_TEMPLATES}/quote_templates ${INVOICEPLANE_INSTALL_DIR}/application/views/quote_templates
+
+  chmod 0750 ${INVOICEPLANE_DOCUMENT_TEMPLATES}/invoice_templates ${INVOICEPLANE_DOCUMENT_TEMPLATES}/quote_templates
+  chown -R ${INVOICEPLANE_USER}: ${INVOICEPLANE_DOCUMENT_TEMPLATES}
+
   CURRENT_VERSION=
   [[ -f ${INVOICEPLANE_DATA_DIR}/VERSION ]] && CURRENT_VERSION=$(cat ${INVOICEPLANE_DATA_DIR}/VERSION)
   if [[ ${INVOICEPLANE_VERSION} != ${CURRENT_VERSION} ]]; then
